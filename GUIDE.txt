@@ -88,9 +88,16 @@ USER WALKTHROUGH
    Stop to silence the music or speech.
 4. Choose an event category, set an alert radius, or enable India-only
    filtering. The map can also be clicked to set an approximate location.
-5. Choose Enable location and grant browser permission if you want
-   distance-based nearby-event information and alerts. Location is
-   optional; without permission, use the map click to set a location.
+5. On startup, the app asks the browser to share your location. Grant
+   permission to enable automatic nearby-event alerts. When an event is
+   detected inside the selected radius, a warning dialog appears, its
+   matching instrumental track plays for 20 seconds, then the speaking
+   agent reads the event name, category, report date, and distance.
+   If the browser blocks automatic audio, use the dialog's retry or
+   Speak alert now buttons. Location remains optional; deny permission
+   and click the map or open Location, preferences and alert radius to enter
+   custom latitude/longitude coordinates. A custom selection overrides GPS;
+   choose Use device location to return to the automatically tracked position.
 6. Use Nearby, Guidance, Storm trend, or Voice command. The Vocal agent
    speaks responses; in Instrumental mode, responses are available as text
    and screen-reader announcements. Voice commands require browser support
@@ -111,8 +118,10 @@ ACCESSIBILITY AND SAFETY
 The interface includes labeled buttons, status announcements, keyboard
 shortcuts, visible focus styling, text details, and optional speech output.
 Location sharing and microphone access are browser permissions and can be
-declined. The sound is a short artistic sonification, not a standardized
-measurement or warning.
+declined. Nearby event alerts are informational notices based on NASA EONET,
+not official warnings; GPS access may be unavailable, inaccurate, or denied.
+The sound is a short artistic sonification, not a standardized measurement
+or warning.
 
 The app is an educational prototype, not an official NASA product, emergency
 service, or forecasting system. Its storm estimate extrapolates recent

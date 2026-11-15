@@ -98,18 +98,32 @@ import "leaflet/dist/leaflet.css";
     instrumentLabel: $("instrument-label"), playSelected: $("play-selected"),
     playLabel: $("play-label"), eventCount: $("event-count"),
     listCount: $("list-count"), updatedTime: $("updated-time"), emptyEvents: $("empty-events"),
+    customLatitude: $("custom-latitude"), customLongitude: $("custom-longitude"),
+    setCustomLocation: $("set-custom-location"), useDeviceLocation: $("use-device-location"),
+    locationSelectionStatus: $("location-selection-status"),
+    alertDialog: $("hazard-dialog"), alertTitle: $("alert-title"),
+    alertSummary: $("alert-summary"), alertStatus: $("alert-status"),
+    alertRetry: $("alert-retry"), alertSpeakNow: $("alert-speak-now"),
+    alertStop: $("alert-stop"), alertClose: $("alert-close"),
   };
 
   let events = [];
   let selectedEvent = null;
   let soundMode = "instrumental";
-  let user = null;            // { lat, lon } once GPS works
+  let user = null;            // active location, from GPS or a custom selection
+  let gpsLocation = null;
+  let customLocationActive = false;
   let watchId = null;
   let userMarker = null;
   let updatedAt = "";
   let refreshTimer = null;
   const seen = new Set();     // event ids already known
   const alerted = new Set();  // alert keys already sent
+  const nearbyAlerted = new Set();
+  const nearbyAlertQueue = [];
+  let activeNearbyAlert = null;
+  let pendingAlertAudio = null;
+  let lastNearbyCheck = 0;
   let ensoState = null;
 
   /* ================= Map ================= */
@@ -244,8 +258,8 @@ import "leaflet/dist/leaflet.css";
     els.playerMode.closest(".player-panel").classList.remove("is-playing");
   }
 
-  function playSound(category, k) {
-    if (soundMode !== "instrumental") return;
+  function playSound(category, k, durationMs, onComplete, onBlocked, forceInstrumental) {
+    if (soundMode !== "instrumental" && !forceInstrumental) return null;
     stopSound();
     const instrument = INSTRUMENTS[category] || INSTRUMENTS.default;
     const audio = new Audio(AUDIO_TRACKS[category] || AUDIO_TRACKS.default);
@@ -258,9 +272,15 @@ import "leaflet/dist/leaflet.css";
     els.playLabel.textContent = "Loading " + instrument.name + "…";
     els.playSelected.classList.add("is-playing");
     els.playerMode.closest(".player-panel").classList.add("is-playing");
-    playback.timer = setTimeout(stopSound, els.eco.checked ? 6000 : 15000);
     audio.addEventListener("playing", () => {
-      if (currentSound === playback) els.playLabel.textContent = instrument.name + " playing";
+      if (currentSound !== playback) return;
+      els.playLabel.textContent = instrument.name + " playing";
+      if (playback.timer) clearTimeout(playback.timer);
+      playback.timer = setTimeout(() => {
+        if (currentSound !== playback) return;
+        stopSound();
+        if (onComplete) onComplete();
+      }, durationMs || (els.eco.checked ? 6000 : 15000));
     });
 
     const result = audio.play();
@@ -269,19 +289,27 @@ import "leaflet/dist/leaflet.css";
         if (currentSound !== playback) return;
         stopSound();
         console.error("Could not play the local instrument track:", error);
-        const message = "Audio could not start. Check your device volume, then try Play again.";
-        els.say.textContent = message;
-        els.live.textContent = message;
+        if (onBlocked) {
+          onBlocked(error);
+        } else {
+          const message = "Audio could not start. Check your device volume, then try Play again.";
+          els.say.textContent = message;
+          els.live.textContent = message;
+        }
       });
     }
+    return playback;
   }
 
   /* ================= Voice output & alerts ================= */
-  // Speaks the text (and always shows it as a caption). With "Spoken voice" off,
-  // it goes to an ARIA live region so a screen reader reads it instead.
+  // Vocal mode uses speech synthesis; instrumental mode sends text to the live region.
   function announce(text, opts) {
     const o = opts || {};
     els.say.textContent = text;
+    if (activeNearbyAlert) {
+      els.live.textContent = text;
+      return;
+    }
     if (soundMode === "vocal" && "speechSynthesis" in window) {
       if (!o.queue) window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
@@ -330,6 +358,10 @@ import "leaflet/dist/leaflet.css";
 
   function setSoundMode(mode) {
     if (soundMode === mode) return;
+    if (activeNearbyAlert) {
+      announce("A nearby event alert is active. Stop or finish it before changing audio mode.");
+      return;
+    }
     stopSound();
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
     soundMode = mode;
@@ -351,12 +383,9 @@ import "leaflet/dist/leaflet.css";
     }
   }
 
-  function alertUser(title, body, ev) {
+  function alertUser(title, body) {
     notify(title, body);
-    if (soundMode === "instrumental") {
-      if (ev) playSound(catId(ev), intensityOf(ev));
-      else earcon();
-    }
+    if (soundMode === "instrumental") earcon();
     announce(body);
   }
 
@@ -369,7 +398,7 @@ import "leaflet/dist/leaflet.css";
 
   /* ================= Assistant answers ================= */
   function nearbyText() {
-    if (!user) return "Your location is off. Press Start assistant and allow location access.";
+    if (!user) return "No location is selected. Allow device location or choose custom coordinates in Location settings.";
     const r = radius();
     const near = withDistance(events).filter((x) => x.d <= r);
     if (!near.length) return "No NASA-tracked hazards within " + r + " kilometres of you right now.";
@@ -379,7 +408,7 @@ import "leaflet/dist/leaflet.css";
   }
 
   function guidanceText() {
-    if (!user) return "Your location is off. Press Start assistant and allow location access.";
+    if (!user) return "No location is selected. Allow device location or choose custom coordinates in Location settings.";
     const r = radius();
     const near = withDistance(events).filter((x) => x.d <= r);
     if (!near.length) {
@@ -429,7 +458,7 @@ import "leaflet/dist/leaflet.css";
   }
 
   function predictionText() {
-    if (!user) return "Your location is off. Press Start assistant and allow location access.";
+    if (!user) return "No location is selected. Allow device location or choose custom coordinates in Location settings.";
     const th = stormThreats();
     if (!th.length) {
       return "No tracked storm is projected to approach you in the next three days. " +
@@ -465,10 +494,134 @@ import "leaflet/dist/leaflet.css";
       alertUser(
         "Storm may approach",
         "Rough estimate: " + t.ev.title + " may pass within " + Math.round(t.d) +
-          " kilometres of you in about " + t.h + " hours. Not an official forecast.",
-        t.ev
+          " kilometres of you in about " + t.h + " hours. Not an official forecast."
       );
     });
+  }
+
+  function queueNearbyAlert(x) {
+    const id = String(x.ev.id);
+    if (nearbyAlerted.has(id)) return;
+    nearbyAlerted.add(id);
+    const g = latest(x.ev);
+    const date = g && g.date ? g.date.slice(0, 10) : "date unavailable";
+    const summary = phrase(x) + ". Last reported " + date + ".";
+    nearbyAlertQueue.push({
+      ev: x.ev,
+      summary,
+      speech: summary + " This is informational data, not an official warning. Follow local authorities.",
+    });
+    processNearbyAlertQueue();
+  }
+
+  function processNearbyAlertQueue() {
+    if (activeNearbyAlert || !nearbyAlertQueue.length) return;
+    activeNearbyAlert = nearbyAlertQueue.shift();
+    els.alertTitle.textContent = catTitle(activeNearbyAlert.ev) + " nearby";
+    els.alertSummary.textContent = activeNearbyAlert.summary;
+    els.alertStatus.textContent = "Playing the event instrument for 20 seconds. The spoken summary follows.";
+    els.alertRetry.hidden = true;
+    els.alertSpeakNow.hidden = true;
+    if (!els.alertDialog.open) els.alertDialog.showModal();
+    notify("Nearby event detected", activeNearbyAlert.summary);
+    playSound(
+      catId(activeNearbyAlert.ev),
+      intensityOf(activeNearbyAlert.ev),
+      20000,
+      speakActiveNearbyAlert,
+      showAlertAudioFallback,
+      true
+    );
+  }
+
+  function speakAlert(alert, onComplete) {
+    els.say.textContent = alert.speech;
+    if (!("speechSynthesis" in window)) {
+      els.alertStatus.textContent = "Speech is unavailable in this browser. The summary is shown above.";
+      els.live.textContent = alert.speech;
+      onComplete();
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(alert.speech);
+    utterance.rate = 0.95;
+    let completed = false;
+    let fallbackTimer;
+    const complete = () => {
+      if (completed) return;
+      completed = true;
+      clearTimeout(fallbackTimer);
+      onComplete();
+    };
+    utterance.onend = complete;
+    utterance.onerror = (event) => {
+      console.error("Could not speak the nearby event summary:", event.error);
+      els.alertStatus.textContent = "Speech could not be played. The summary remains available above.";
+      els.live.textContent = alert.speech;
+      complete();
+    };
+    fallbackTimer = setTimeout(complete, Math.max(10000, alert.speech.length * 75));
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function speakActiveNearbyAlert() {
+    if (!activeNearbyAlert) return;
+    els.alertStatus.textContent = "Instrumental finished. Speaking the event summary.";
+    speakAlert(activeNearbyAlert, finishNearbyAlert);
+  }
+
+  function showAlertAudioFallback(error) {
+    if (!activeNearbyAlert) return;
+    console.warn("Automatic nearby-event audio was blocked:", error);
+    pendingAlertAudio = activeNearbyAlert;
+    if (!els.alertDialog.open) els.alertDialog.showModal();
+    els.alertStatus.textContent = "The browser blocked automatic audio. Retry the music or speak the alert now.";
+    els.alertRetry.hidden = false;
+    els.alertSpeakNow.hidden = false;
+  }
+
+  function retryAlertAudio() {
+    if (!pendingAlertAudio || pendingAlertAudio !== activeNearbyAlert) return;
+    pendingAlertAudio = null;
+    els.alertRetry.hidden = true;
+    els.alertSpeakNow.hidden = true;
+    els.alertStatus.textContent = "Playing the event instrument for 20 seconds. The spoken summary follows.";
+    playSound(
+      catId(activeNearbyAlert.ev),
+      intensityOf(activeNearbyAlert.ev),
+      20000,
+      speakActiveNearbyAlert,
+      showAlertAudioFallback,
+      true
+    );
+  }
+
+  function speakPendingAlert() {
+    if (!pendingAlertAudio || pendingAlertAudio !== activeNearbyAlert) return;
+    pendingAlertAudio = null;
+    els.alertRetry.hidden = true;
+    els.alertSpeakNow.hidden = true;
+    els.alertStatus.textContent = "Speaking the event summary.";
+    speakActiveNearbyAlert();
+  }
+
+  function finishNearbyAlert() {
+    activeNearbyAlert = null;
+    pendingAlertAudio = null;
+    if (els.alertDialog.open) els.alertDialog.close();
+    setTimeout(processNearbyAlertQueue, 250);
+  }
+
+  function checkNearbyEvents(force) {
+    if (!user) return;
+    const now = Date.now();
+    if (!force && now - lastNearbyCheck < 30000) return;
+    lastNearbyCheck = now;
+    withDistance(events)
+      .filter((x) => x.d <= radius() && !nearbyAlerted.has(String(x.ev.id)))
+      .slice(0, 3)
+      .forEach(queueNearbyAlert);
   }
 
   function alertFresh(fresh) {
@@ -476,7 +629,7 @@ import "leaflet/dist/leaflet.css";
     withDistance(fresh)
       .filter((x) => x.d <= radius())
       .slice(0, 3)
-      .forEach((x) => alertUser("New hazard near you", "New alert. " + phrase(x) + ".", x.ev));
+      .forEach(queueNearbyAlert);
   }
 
   /* ================= El Niño / La Niña watch (NOAA ONI) ================= */
@@ -542,7 +695,7 @@ import "leaflet/dist/leaflet.css";
       else button.removeAttribute("aria-current");
     });
     announce(eventNarration(ev));
-    if (soundMode === "instrumental") playSound(catId(ev), intensityOf(ev));
+    if (soundMode === "instrumental" && !activeNearbyAlert) playSound(catId(ev), intensityOf(ev));
   }
 
   /* ================= Render ================= */
@@ -632,6 +785,7 @@ import "leaflet/dist/leaflet.css";
         fillCategories();
         render();
         els.status.textContent = "Could not reach NASA EONET. Showing demo data.";
+        checkNearbyEvents(true);
       } else {
         els.status.textContent = "Update failed. Showing the last known data. Will retry.";
       }
@@ -645,8 +799,9 @@ import "leaflet/dist/leaflet.css";
     updatedAt = new Date().toLocaleTimeString();
     fillCategories();
     render();
-    if (!initial) alertFresh(fresh); // no alert flood on the very first load
     checkThreats();
+    if (!initial) alertFresh(fresh); // no alert flood on the very first load
+    checkNearbyEvents(true);
     schedule();
   }
 
@@ -662,15 +817,53 @@ import "leaflet/dist/leaflet.css";
     }
   }
 
-  let gpsActive = false;
-
-  // Fallback when GPS is blocked: click the map to set where you are.
-  map.on("click", (e) => {
-    if (gpsActive) return;
-    user = { lat: e.latlng.lat, lon: e.latlng.lng };
+  function setSelectedLocation(point, source, shouldAnnounce) {
+    customLocationActive = source === "custom";
+    user = point;
+    els.customLatitude.value = point.lat.toFixed(4);
+    els.customLongitude.value = point.lon.toFixed(4);
     drawUser();
-    announce("Location set from the map. " + nearbyText());
+    map.flyTo([user.lat, user.lon], Math.max(map.getZoom(), 4), { animate: !reduceMotion });
+    const description = source === "custom" ? "Custom location selected" : "Using device location";
+    els.locationSelectionStatus.textContent =
+      description + " (" + user.lat.toFixed(4) + ", " + user.lon.toFixed(4) + ").";
+    if (shouldAnnounce !== false) announce(description + ". " + nearbyText());
+    checkNearbyEvents(true);
     checkThreats();
+  }
+
+  function chooseCustomCoordinates() {
+    const latText = els.customLatitude.value.trim();
+    const lonText = els.customLongitude.value.trim();
+    const lat = Number(latText);
+    const lon = Number(lonText);
+    if (!latText || !lonText || !Number.isFinite(lat) || lat < -90 || lat > 90) {
+      els.locationSelectionStatus.textContent = "Enter a latitude between -90 and 90.";
+      els.customLatitude.focus();
+      return;
+    }
+    if (!Number.isFinite(lon) || lon < -180 || lon > 180) {
+      els.locationSelectionStatus.textContent = "Enter a longitude between -180 and 180.";
+      els.customLongitude.focus();
+      return;
+    }
+    setSelectedLocation({ lat, lon }, "custom");
+  }
+
+  function chooseDeviceLocation() {
+    customLocationActive = false;
+    if (gpsLocation) {
+      setSelectedLocation(gpsLocation, "device");
+      return;
+    }
+    els.locationSelectionStatus.textContent = "Waiting for device location permission.";
+    announce("Waiting for your device location. Allow the browser permission prompt if asked.");
+    startLocation();
+  }
+
+  // Map clicks always let the user override the automatic device location.
+  map.on("click", (e) => {
+    setSelectedLocation({ lat: e.latlng.lat, lon: e.latlng.lng }, "custom");
   });
 
   function startLocation() {
@@ -688,19 +881,20 @@ import "leaflet/dist/leaflet.css";
     if (watchId !== null) return;
     watchId = navigator.geolocation.watchPosition(
       (pos) => {
-        gpsActive = true;
-        const first = !user;
-        user = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-        drawUser();
-        if (first) {
-          map.setView([user.lat, user.lon], 5, { animate: !reduceMotion });
+        gpsLocation = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+        if (customLocationActive) return;
+        if (!user) {
+          setSelectedLocation(gpsLocation, "device", false);
           announce("Location found. " + nearbyText(), { queue: true });
-          checkThreats();
+        } else {
+          user = gpsLocation;
+          drawUser();
+          checkNearbyEvents(false);
         }
       },
       (err) => {
-        if (gpsActive) return; // a later timeout is harmless once we have a fix
         watchId = null;
+        if (gpsLocation || customLocationActive) return;
         const why =
           err.code === 1
             ? "Permission was denied. Allow location for this site in your browser, then press Start assistant again."
@@ -708,7 +902,8 @@ import "leaflet/dist/leaflet.css";
             ? "Your device could not find its position. Turn on location services."
             : "Location timed out.";
         announce(
-          "I could not get your location. " + why + " You can also click on the map to set your location.",
+          "I could not get your location. " + why +
+            " You can also click on the map or enter coordinates in Location settings.",
           { queue: true }
         );
       },
@@ -799,11 +994,19 @@ import "leaflet/dist/leaflet.css";
   function stopAll() {
     stopSound();
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    nearbyAlertQueue.length = 0;
+    activeNearbyAlert = null;
+    pendingAlertAudio = null;
+    if (els.alertDialog.open) els.alertDialog.close();
     els.say.textContent = "Playback stopped.";
     els.live.textContent = "Playback stopped.";
   }
 
   function playSelectedEvent() {
+    if (activeNearbyAlert) {
+      announce("A nearby event alert is active. Stop or finish it before playing another signal.");
+      return;
+    }
     if (!selectedEvent) {
       announce("Select an event from the map or list first.");
       return;
@@ -838,9 +1041,19 @@ import "leaflet/dist/leaflet.css";
   els.guide.addEventListener("click", () => announce(guidanceText()));
   els.predict.addEventListener("click", () => announce(predictionText()));
   els.stop.addEventListener("click", stopAll);
+  els.setCustomLocation.addEventListener("click", chooseCustomCoordinates);
+  els.useDeviceLocation.addEventListener("click", chooseDeviceLocation);
+  els.alertRetry.addEventListener("click", retryAlertAudio);
+  els.alertSpeakNow.addEventListener("click", speakPendingAlert);
+  els.alertStop.addEventListener("click", stopAll);
+  els.alertClose.addEventListener("click", () => els.alertDialog.close());
+  els.alertDialog.addEventListener("close", speakPendingAlert);
   els.cat.addEventListener("change", render);
   els.india.addEventListener("change", render);
-  els.radius.addEventListener("change", () => announce("Alert radius set to " + radius() + " kilometres."));
+  els.radius.addEventListener("change", () => {
+    announce("Alert radius set to " + radius() + " kilometres.");
+    checkNearbyEvents(true);
+  });
   els.eco.addEventListener("change", () => {
     schedule();
     announce(els.eco.checked
@@ -864,6 +1077,7 @@ import "leaflet/dist/leaflet.css";
 
   /* ================= Go ================= */
   updateModeUI();
+  startLocation();
   load(true);
   loadEnso();
   setInterval(loadEnso, 12 * 60 * 60 * 1000);

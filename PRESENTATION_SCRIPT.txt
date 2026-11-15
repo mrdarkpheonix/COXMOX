@@ -18,10 +18,13 @@ to clearly identified sample data."
 
 [Show controls]
 "The controls are designed to work with a keyboard and assistive
-technology. Supported browsers can accept voice commands. Location is
-optional: with permission, the app can
-estimate distance and direction to reported events; alternatively, you can
-click the map to set a point manually."
+technology. Supported browsers can accept voice commands. The app asks for
+location permission at startup, but location is optional. When permission is
+granted, a nearby event opens a warning dialog, plays its matching instrument
+for 20 seconds, then speaks an informational summary. If permission is denied,
+you can click the map or enter latitude/longitude coordinates to set a custom point;
+choose Use device location to switch back. Browser settings may block
+automatic audio; the dialog offers retry and speak-now controls."
 
 [Show climate context and status]
 "A separate panel shows the latest available NOAA ONI reading as broad
@@ -40,5 +43,6 @@ DEMO CHECKLIST
 * Start the app before presenting; confirm the live-data or demo-data status.
 * Have one event ready to select and play.
 * Demonstrate one filter and one keyboard shortcut (for example H or N).
-* Request location only if the presenter has chosen to share it.
+* Grant location only if the presenter has chosen to share it; browser
+  permission is requested automatically at startup.
 * Do not describe the storm trend estimate as a forecast or safety warning.

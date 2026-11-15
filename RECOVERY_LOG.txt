@@ -35,6 +35,15 @@ Changes made
     command to generate an editable 10-slide project PowerPoint.
 15. Added pptxgenjs as a development dependency and overrode image-size to
     a patched version after npm audit identified vulnerable transitive code.
+16. Added startup geolocation watch (subject to browser permission), nearby
+    event checks for the chosen radius, and an accessible alert dialog.
+17. Nearby events now play their mapped local instrument for 20 seconds and
+    then speak an informational event summary. Added retry/speak-now controls
+    when browser autoplay is blocked, alert deduplication, and Stop handling.
+18. Updated the user guide and presentation materials for permission-based
+    auto-location and the nearby-event alert sequence.
+19. Added custom latitude/longitude selection and made map clicks an explicit
+    override for GPS. Added a control to return to the device location.
 
 Original project files retained
 -------------------------------
@@ -79,6 +88,32 @@ mapped instrument label (Marimba for Wildfires). Stop and mode switching
 were also exercised. The browser's NOAA ONI request was blocked by the
 source's CORS policy; the UI retains its existing clear unavailable-data
 message for that source.
+
+Nearby event alert implementation
+---------------------------------
+The app now requests location permission when it starts; browsers still
+require the user to grant permission, and the app cannot bypass that prompt.
+For an authorized location it checks NASA EONET events against the selected
+radius, shows a warning dialog, plays the matching local track for 20 seconds,
+then speaks the summary. If browser autoplay is denied, the dialog offers
+retry and immediate-speech actions. The event information is not an official
+warning. Users can select a custom location by clicking the map or entering
+latitude/longitude coordinates; GPS updates do not overwrite that choice
+until the device-location control is selected.
+
+Validation
+----------
+`npm run build` succeeded with Vite 6.4.6 and `npm run presentation`
+regenerated the 10-slide PowerPoint. Browser testing with simulated nearby
+event data confirmed automatic location handling, the warning dialog, local
+instrument playback, the spoken summary after the playback timer, Stop, and
+the autoplay-blocked retry/speak-now fallback. Custom coordinate input and
+map override testing confirmed that the selected coordinates update the
+location, a nearby alert uses that custom point, and GPS resumes only after
+the device-location button is selected. The speech and timer were accelerated
+only in the browser test; the application retains the requested 20-second
+playback. NOAA ONI access remains subject to the source's existing browser
+CORS limitation.
 
 Audio playback fix
 ------------------

@@ -96,8 +96,8 @@
           <div class="map-legend"><span class="legend-dot"></span> Active event <span class="legend-separator">·</span> Select a marker to listen</div>
         </div>
         <div class="map-caption">
-          <span>NASA EOSDIS GIBS imagery</span>
-          <span>Map markers represent reported event locations</span>
+          <span>NASA EOSDIS GIBS imagery · click map to set your location</span>
+          <span>Markers show reported event locations</span>
         </div>
       </section>
 
@@ -168,7 +168,7 @@
         </section>
 
         <details class="settings-panel">
-          <summary>Preferences and alert radius</summary>
+          <summary>Location, preferences and alert radius</summary>
           <div class="settings-content">
             <label for="radius">Nearby event radius</label>
             <select id="radius">
@@ -177,12 +177,43 @@
               <option value="500" selected>500 km</option>
               <option value="1000">1,000 km</option>
             </select>
+            <fieldset class="location-picker">
+              <legend>Choose a custom location</legend>
+              <p>Click the map or enter coordinates. Custom locations override GPS until you choose device location.</p>
+              <div class="coordinate-inputs">
+                <label for="custom-latitude">Latitude
+                  <input id="custom-latitude" type="number" min="-90" max="90" step="any" placeholder="e.g. 37.7749" required />
+                </label>
+                <label for="custom-longitude">Longitude
+                  <input id="custom-longitude" type="number" min="-180" max="180" step="any" placeholder="e.g. -122.4194" required />
+                </label>
+              </div>
+              <button id="set-custom-location" class="location-choice-button" type="button">Use custom coordinates</button>
+              <button id="use-device-location" class="location-choice-button" type="button">Use device location</button>
+              <p id="location-selection-status" class="location-selection-status" role="status">No custom location selected.</p>
+            </fieldset>
             <label class="eco-label"><input type="checkbox" id="eco" /> Eco mode <span>Refresh less often and shorten music</span></label>
           </div>
         </details>
       </aside>
     </div>
   </main>
+
+  <dialog id="hazard-dialog" class="hazard-dialog" aria-labelledby="alert-title" aria-describedby="alert-summary alert-status">
+    <div class="hazard-dialog-header">
+      <span class="hazard-alert-kicker"><span aria-hidden="true"></span> NEARBY EVENT · NASA EONET</span>
+      <button id="alert-close" class="dialog-close" type="button" aria-label="Close alert">×</button>
+    </div>
+    <h2 id="alert-title">Nearby event detected</h2>
+    <p id="alert-summary" class="alert-summary"></p>
+    <p id="alert-status" class="alert-status">Playing the event instrument for 20 seconds. The spoken summary follows.</p>
+    <div class="alert-actions">
+      <button id="alert-retry" type="button" class="alert-primary" hidden>Play 20-second alert music</button>
+      <button id="alert-speak-now" type="button" class="alert-secondary" hidden>Speak alert now</button>
+      <button id="alert-stop" type="button" class="alert-secondary">Stop alert</button>
+    </div>
+    <p class="alert-disclaimer">This is an informational data notice, not an official warning or forecast. Follow local authorities.</p>
+  </dialog>
 
   <div id="live" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
 

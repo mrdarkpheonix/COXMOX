@@ -316,7 +316,8 @@ function addMapMock(slide, x, y, w, h) {
     ["Voice input", "Supported browsers can recognize spoken commands."],
     ["Keyboard", "V voice · N nearby · G guidance · P storm trend · S stop."],
     ["Text stays visible", "Descriptions and state remain on screen for non-audio use."],
-    ["Location is optional", "Share a location or click the map to set one manually."],
+    ["Location choices", "Optional GPS, map click, or custom coordinates."],
+    ["Nearby alerts", "Within radius: 20-second instrument, then spoken summary."],
   ];
   features.forEach((f, i) => {
     const col = i % 2, row = Math.floor(i / 2);
@@ -336,7 +337,7 @@ function addMapMock(slide, x, y, w, h) {
     ["Keyboard-ready", "Visible focus, skip link, labeled controls, and shortcuts."],
     ["Screen-reader context", "Live announcements and event descriptions accompany map changes."],
     ["Reduced motion", "Map movement respects the operating-system preference."],
-    ["No autoplay", "Sound starts only after a visitor chooses an event or Play."],
+    ["Alert fallback", "Retry audio or request speech if browser autoplay is blocked."],
     ["Offline-safe events", "Bundled demo events appear when the initial EONET request fails."],
     ["Clear boundaries", "Location permission is optional; reports are not official alerts."],
   ];
