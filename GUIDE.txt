@@ -1,0 +1,139 @@
+THE COXMOX - RUN AND USER GUIDE
+================================
+
+WHAT THE APPLICATION DOES
+-------------------------
+The Coxmox is a browser-based, accessible view of NASA-tracked natural
+events. It places current event markers on a world map, provides a
+filterable event list, and offers two listening modes. Instrumental mode
+plays a short, synthesized musical phrase with a distinct instrument for
+each event category. Vocal mode uses a speaking agent to describe the
+selected event. The app can accept spoken commands in supported browsers
+and calculate approximate distance and direction from a location the user
+chooses or shares.
+
+INSTRUMENTAL EVENT MAP
+----------------------
+Wildfires                Marimba
+Severe storms            French horn
+Volcanoes                Pipe organ
+Floods                   Piano
+Sea and lake ice         Glockenspiel
+Earthquakes              Timpani
+Drought                  Flute
+Dust and haze            Clarinet
+Landslides               Cello
+Snow                     Celesta
+Temperature extremes     Muted trumpet
+Water color              Harp
+Human-caused events      Synth bass
+Other/unrecognized type  Chimes
+
+The reported event magnitude affects note pitch and pacing, not loudness.
+These are artistic sound mappings, not calibrated scientific instruments.
+
+The application also displays the latest NOAA Oceanic Nino Index (ONI)
+reading as climate context. This index is not a local hazard alert.
+NASA EONET and NOAA are external services; bundled sample events are
+shown if the initial EONET request fails. Sample data is not live data.
+
+REQUIREMENTS
+------------
+* Windows 10/11.
+* Node.js LTS with npm. Confirm installation in a new terminal with:
+    node --version
+    npm --version
+* Internet access for npm installation, NASA/NOAA data, and NASA map tiles.
+* A recent browser. Chrome or Edge provide the best support for voice input.
+  Map interaction, buttons, and keyboard shortcuts remain available without
+  voice input.
+
+FIRST-TIME SETUP
+----------------
+1. Install Node.js LTS from https://nodejs.org/ if it is not installed.
+   The installer includes npm. Close and reopen the terminal afterward.
+2. Open the project folder (the folder containing package.json).
+3. Double-click RUN_EARTH_JUKEBOX.bat. On first run it installs the local
+   dependencies, then starts the development server and opens the app.
+
+You can also run the setup manually from the project folder:
+    npm install
+    npm run dev
+
+The local address is normally:
+    http://127.0.0.1:5173
+
+Keep the terminal window open while using the app. Press Ctrl+C in that
+window to stop the server. Do not open DATA\index.html by double-clicking:
+the development server is needed for npm modules and secure browser features.
+
+OTHER NPM COMMANDS
+------------------
+    npm run build       Create the production build in dist\
+    npm run preview     Serve the production build locally
+    npm run start       Start the development server
+    npm run presentation Generate THE_COXMOX_PROJECT_PRESENTATION.pptx
+
+USER WALKTHROUGH
+----------------
+1. Start the app and wait for events to load. The status text reports
+   whether live data or fallback data is displayed.
+2. Select Instrumental or Vocal agent. In Instrumental mode, event types
+   have distinct sounds: for example, wildfires use marimba, floods use
+   piano, storms use French horn, and sea/lake ice uses glockenspiel.
+   In Vocal mode, the speaking agent describes the event and its available
+   report details.
+3. Select a marker on the map or an event button in the list. Playback
+   starts in the chosen mode. Use Play to replay the selected event and
+   Stop to silence the music or speech.
+4. Choose an event category, set an alert radius, or enable India-only
+   filtering. The map can also be clicked to set an approximate location.
+5. Choose Enable location and grant browser permission if you want
+   distance-based nearby-event information and alerts. Location is
+   optional; without permission, use the map click to set a location.
+6. Use Nearby, Guidance, Storm trend, or Voice command. The Vocal agent
+   speaks responses; in Instrumental mode, responses are available as text
+   and screen-reader announcements. Voice commands require browser support
+   and microphone permission.
+7. Enable Eco mode for less frequent data refresh and shorter music.
+
+KEYBOARD SHORTCUTS
+------------------
+V  Start voice command
+N  Read nearby events
+G  Read guidance
+P  Read the rough storm trend estimate
+H  Read command help
+S  Stop sound and speech
+
+ACCESSIBILITY AND SAFETY
+------------------------
+The interface includes labeled buttons, status announcements, keyboard
+shortcuts, visible focus styling, text details, and optional speech output.
+Location sharing and microphone access are browser permissions and can be
+declined. The sound is a short artistic sonification, not a standardized
+measurement or warning.
+
+The app is an educational prototype, not an official NASA product, emergency
+service, or forecasting system. Its storm estimate extrapolates recent
+reported movement and can be inaccurate. Always follow local emergency
+services and official weather authorities. Do not use the app to decide
+whether to evacuate or to delay seeking help.
+
+PROJECT LAYOUT
+--------------
+DATA\index.html          Accessible page shell and controls
+DATA\app.js              NASA/NOAA data, map, voice, and sound behavior
+DATA\style.css           Responsive visual styling
+DATA\audio\              Local instrument WAV tracks and their notes
+DATA\PRD.txt             Product requirements and planned features
+DATA\RESOURCES_GUIDE.txt NASA data, imagery, and accessibility references
+package.json             npm scripts and runtime dependencies
+package-lock.json        Exact npm dependency versions (created by npm install)
+vite.config.js           Vite root and production output configuration
+RUN_EARTH_JUKEBOX.bat    Windows setup-and-run launcher
+GUIDE.txt                This setup and user guide
+PRESENTATION_SCRIPT.txt  Short demo presentation script
+RECOVERY_LOG.txt         Changes made and restore instructions
+scripts\create-presentation.js   Source for the editable PowerPoint deck
+THE_COXMOX_PROJECT_PRESENTATION.pptx   Generated 10-slide project presentation

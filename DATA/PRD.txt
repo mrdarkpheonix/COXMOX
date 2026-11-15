@@ -1,0 +1,302 @@
+=====================================================================
+PRODUCT REQUIREMENTS DOCUMENT (PRD)
+THE EARTH JUKEBOX - NASA Space Apps Challenge 2026
+Challenge: "The Earth Information Jukebox"
+Stack: React (Vite) | Theme: simple, easy access
+=====================================================================
+
+IMPORTANT NOTE ON SOURCES
+The official challenge page (spaceappschallenge.org) blocked automated
+reading, so I could not read it directly. The challenge statement in
+section 2 is taken from a third-party page that quotes it
+(edeon.sonoma.edu/nasaspaceapps-26). Please open the official page and
+its Resources tab yourself and compare. Anything marked [VERIFY] should be
+checked against the official text before you rely on it.
+
+---------------------------------------------------------------------
+1. OVERVIEW
+---------------------------------------------------------------------
+Product name : Earth Jukebox (working title; rename if you wish)
+One-liner    : See Earth change. Hear Earth change.
+Summary      : A web app that shows NASA Earth Information Center (EIC)
+               style visuals and plays a live-generated sound for the same
+               data, so people can understand Earth science through
+               sight AND sound, including people who cannot see the screen.
+
+---------------------------------------------------------------------
+2. CHALLENGE STATEMENT (as quoted by a third-party page) [VERIFY]
+---------------------------------------------------------------------
+"NASA's Earth Information Center (EIC) produces stunning visualizations of
+our changing planet, but presenting Earth science through visualization
+alone limits who can reach it. The challenge is to build an 'Earth
+Jukebox' - an interface, script, or application that pairs EIC visual
+frames with dynamic sonifications generated in real time. The goal is to
+make Earth science accessible, engaging, and multi-sensory by translating
+sight into sound."
+
+---------------------------------------------------------------------
+3. PROBLEM ANALYSIS
+---------------------------------------------------------------------
+3.1 What the challenge really asks (broken into parts)
+  a) PAIR     - show an EIC-style visual frame together with a sound.
+  b) DYNAMIC  - the sound must come from the data, not a fixed recording.
+  c) REAL TIME- sound is generated live in the app (not pre-rendered).
+  d) ACCESSIBLE - reach people who a visualization alone leaves out.
+  e) MULTI-SENSORY / ENGAGING - it should be pleasant and interesting.
+  The deliverable can be "an interface, script, or application", so a web
+  app is fully in scope.
+
+3.2 Who is left out today
+  - Blind and low-vision people (charts and maps are inaccessible)
+  - People with colour-vision differences
+  - People who learn better by listening
+  - Students, teachers, and the general public who find science images
+    hard to interpret
+
+3.3 What a winning answer likely needs (my analysis, not NASA text)
+  - Real NASA data driving the sound (judges check "validity").
+  - A clear, explained mapping: data value -> sound (see section 8).
+  - Works without sight: keyboard, screen reader, spoken description.
+  - Works on a phone and is simple enough to demo in 2 minutes.
+  - Honest limits: say what is real data and what is artistic.
+
+3.4 Other teams are building similar ideas. To stand out, pick ONE
+    clear angle (see section 5) and do it well.
+
+---------------------------------------------------------------------
+4. GOALS AND NON-GOALS
+---------------------------------------------------------------------
+GOALS
+  G1. Let a user pick an Earth topic and instantly see AND hear it.
+  G2. Generate sound live in the browser from real NASA data.
+  G3. Be fully usable with keyboard and screen reader (no mouse, no sight).
+  G4. Explain in plain words what the user is hearing.
+  G5. Ship a working, deployed demo within the event time.
+
+NON-GOALS (do not build these now)
+  - Official warnings or forecasting (this is education and access).
+  - Accounts, logins, or a database.
+  - A native mobile app (use a responsive web app).
+  - Perfect scientific accuracy of every mapping (explain it instead).
+
+---------------------------------------------------------------------
+5. UNIQUE ANGLE (choose one; recommended = A)
+---------------------------------------------------------------------
+  A. "Instrument per Earth topic" (RECOMMENDED - already prototyped)
+     Each topic has its own instrument and music (e.g. wildfire =
+     marimba, flood = piano). Data controls pitch, speed, loudness.
+  B. "Then vs Now" - hear 1990 and today side by side.
+  C. "My region" - hear changes where the user lives.
+  Pick A for the core; add B as a bonus if time allows.
+
+---------------------------------------------------------------------
+6. USERS AND SCENARIOS
+---------------------------------------------------------------------
+  U1. Asha (blind student): opens the app with a screen reader, picks
+      "Sea ice" with the keyboard, hears bells thin out as ice shrinks,
+      and hears a spoken summary.
+  U2. Ravi (teacher): projects the app, plays the tour for a class.
+  U3. Meera (curious public): taps a topic on her phone, sees the
+      NASA-style image, and hears it.
+
+---------------------------------------------------------------------
+7. FEATURES AND PRIORITY
+---------------------------------------------------------------------
+MUST HAVE (MVP)  - build these first
+  F1. Topic picker: 6-8 topics (see section 8), big buttons.
+  F2. Visual panel: NASA imagery or a chart for the chosen topic.
+  F3. Live sonification: Web Audio / Tone.js plays sound from data.
+  F4. Play / Pause / Stop, volume, and a "speed" or severity control.
+  F5. Plain-language caption: what you see and what you hear.
+  F6. Text-to-speech description (browser speechSynthesis).
+  F7. Full keyboard support + screen-reader labels (ARIA live region).
+  F8. Data and credits panel: dataset names, links, "not official NASA".
+
+SHOULD HAVE
+  F9.  Time slider (years/months) so sound and image change together.
+  F10. Sync: moving the slider updates image, sound, and caption.
+  F11. Live NASA event counts (EONET) shown on topic cards.
+  F12. Offline-safe demo data if the network or API fails.
+  F13. Light and dark themes; adjustable text size.
+
+NICE TO HAVE
+  F14. "Then vs Now" comparison mode.
+  F15. Voice commands (Chrome/Edge only).
+  F16. "My region" using the browser location, with permission.
+  F17. Export a short audio clip or share link.
+
+---------------------------------------------------------------------
+8. SONIFICATION DESIGN (data -> sound)
+---------------------------------------------------------------------
+Rules to keep it understandable:
+  - Never use loudness to carry data value (hard to compare, can hurt
+    ears). Use pitch, rhythm, density, or instrument instead.
+  - Same direction everywhere: "more / worse / hotter" = higher pitch or
+    denser notes. Say this on screen.
+  - Always show the mapping in a small table.
+
+Starter topics and mappings (data names are suggestions, [VERIFY]):
+  Topic            Data source idea        Instrument   Data -> sound
+  ---------------  ----------------------  -----------  ----------------
+  Global warming   GISTEMP temp anomaly    Trumpet/     warmer = higher
+                                           piano        pitch
+  Sea ice          NSIDC sea ice extent    Glockenspiel less ice = fewer,
+                                                        slower bells
+  Wildfires        EONET / FIRMS fires     Marimba      more fires = more
+                                                        notes per second
+  Floods           EONET / GPM rainfall    Piano        more water = more
+                                                        and faster notes
+  Storms           EONET storms            Violin       stronger = faster
+                                                        tremolo
+  Volcanoes        EONET volcanoes         Pipe organ   more activity =
+                                                        darker chords
+  Drought/Heat     temperature/vegetation  Flute/       drier = thinner,
+                   (NDVI)                  clarinet     more silence
+  Air quality      NO2 / CO / PM2.5        Clarinet     more pollution =
+                                                        murkier, layered
+  Note: the working prototype in the earth-jukebox folder already has 10
+  composed instruments. Reuse that audio code inside React.
+
+---------------------------------------------------------------------
+9. USER FLOW
+---------------------------------------------------------------------
+  1. Landing: title, one sentence, big "Start listening" button.
+  2. Topic picker: cards with icon, name, instrument.
+  3. Topic page:
+       - top: image/chart  - middle: Play/Pause, slider, volume
+       - bottom: caption, mapping table, data source, "Read aloud"
+  4. Switch topic any time; sound crossfades or stops cleanly.
+  5. About page: data credits, accessibility statement, disclaimer.
+
+---------------------------------------------------------------------
+10. UI THEME: SIMPLE AND EASY ACCESS
+---------------------------------------------------------------------
+  - One column on phones, two columns on desktop. Few elements per screen.
+  - Large buttons (at least 44 x 44 px), clear labels, no icon-only buttons.
+  - High contrast (text contrast at least 4.5:1). Light and dark mode.
+  - Calm palette: deep navy background, white text, one accent colour
+    (cyan). Never use colour alone to show meaning.
+  - Readable font (system sans-serif), base size 18px, user can enlarge.
+  - Visible focus ring on every control. Logical tab order.
+  - Respect "reduce motion". No flashing or auto-playing sound:
+    sound starts ONLY after a user action.
+  - Short plain-English text. No jargon without an explanation.
+
+---------------------------------------------------------------------
+11. ACCESSIBILITY REQUIREMENTS (target WCAG 2.2 AA)
+---------------------------------------------------------------------
+  A1. Everything works with the keyboard alone.
+  A2. Semantic HTML: header, main, nav, buttons, headings in order.
+  A3. aria-live region announces topic changes and playback state.
+  A4. Every image has meaningful alt text describing the data trend.
+  A5. Text description available for every sound (caption + speech).
+  A6. A "Skip to content" link. Page language set (lang="en").
+  A7. Test with a real screen reader (NVDA / TalkBack / VoiceOver) and
+      with the monitor turned off.
+  A8. Do not trap focus. Provide a clear Stop button reachable by Tab.
+
+---------------------------------------------------------------------
+12. TECHNICAL REQUIREMENTS (REACT)
+---------------------------------------------------------------------
+Stack
+  - React 18 + Vite (fast dev, easy deploy). Plain CSS or CSS modules.
+  - Audio: Web Audio API (raw) or Tone.js. No audio files needed.
+  - Data fetch: fetch() to public NASA APIs; cache results in memory.
+  - Optional: Leaflet or a static NASA image for the map.
+  - Deploy: Netlify or Vercel (free, https).
+
+Suggested structure
+  src/
+    main.jsx, App.jsx
+    components/ TopicCard, TopicPage, Player, Slider, Caption,
+                MappingTable, DataCredits, SkipLink
+    audio/      engine.js (context, master gain, reverb),
+                instruments.js, composers.js
+    data/       topics.js (config), api.js (fetch + fallback), demo/*.json
+    hooks/      useAudio.js, useSpeech.js, useNasaData.js
+    styles/     theme.css
+
+Performance and reliability
+  - Create the AudioContext only after a click.
+  - Stop all audio on page change / unmount (no leaked oscillators).
+  - If an API fails, show a clear message and use bundled demo data.
+  - Keep the first load small (under about 1 MB of JS if possible).
+
+Browser support
+  - Chrome / Edge (best), Firefox, Safari (voice commands may not work).
+  - Location and microphone need https or localhost.
+
+---------------------------------------------------------------------
+13. DATA REQUIREMENTS
+---------------------------------------------------------------------
+  - Use real NASA data wherever possible; label demo data as demo.
+  - Show dataset name, date range, and a link on every topic.
+  - Normalise values to 0-1 before mapping to sound.
+  - See RESOURCES_GUIDE.txt for sources and links.
+
+---------------------------------------------------------------------
+14. SUCCESS METRICS (for the demo and judges)
+---------------------------------------------------------------------
+  - A new user hears a data-driven sound within 10 seconds, in 2 clicks.
+  - Passes a keyboard-only and a screen-reader walk-through.
+  - At least 6 topics, each with a different instrument and real data.
+  - Lighthouse accessibility score 95 or higher.
+  - Demo video of 1-2 minutes tells the story clearly.
+
+---------------------------------------------------------------------
+15. JUDGING ALIGNMENT [VERIFY on the official site]
+---------------------------------------------------------------------
+Space Apps projects are usually judged on things like impact, creativity,
+validity, relevance, and presentation (check the official list).
+  Impact     -> helps blind / low-vision people and learners
+  Creativity -> an instrument per Earth topic
+  Validity   -> real NASA data, mapping explained
+  Relevance  -> pairs visuals with live sonification, as asked
+  Presentation -> clean demo, clear README, short video
+
+---------------------------------------------------------------------
+16. TIMELINE (adjust to your remaining time)
+---------------------------------------------------------------------
+  Block 1 (1-2 h)  : Vite + React setup, theme, topic config, audio
+                     engine ported from the prototype.
+  Block 2 (2-3 h)  : 3 topics working end to end with real data.
+  Block 3 (1-2 h)  : Remaining topics, slider sync, captions, speech.
+  Block 4 (1 h)    : Accessibility pass, test on phone, fix bugs.
+  Block 5 (1 h)    : Deploy, README, screenshots, demo video, submit.
+  If short on time, cut F14-F17 first, then F9-F10.
+
+---------------------------------------------------------------------
+17. RISKS AND MITIGATIONS
+---------------------------------------------------------------------
+  - NASA API down or blocked by CORS -> bundled demo data + clear label.
+  - Sound is unpleasant or confusing -> keep sounds gentle, test with
+    other people, show the mapping.
+  - Browser blocks audio -> start only after a click; show a clear button.
+  - Too much scope -> finish MVP (F1-F8) before anything else.
+  - Looks like other teams -> lead with the instrument-per-topic idea
+    and the accessibility story.
+  - Over-claiming -> label "not an official NASA product, not a warning
+    system".
+
+---------------------------------------------------------------------
+18. SUBMISSION CHECKLIST [VERIFY dates and format on the official site]
+---------------------------------------------------------------------
+  [ ] Public GitHub repo (open source; add a licence such as MIT)
+  [ ] README: problem, solution, data sources, how to run, mapping table
+  [ ] Live demo link (https)
+  [ ] 1-2 minute demo video
+  [ ] Credits to NASA datasets and the disclaimer
+  [ ] Disclose any AI tools used, as the event rules require
+  [ ] Submit on your team page before your local event's cutoff
+
+---------------------------------------------------------------------
+19. OPEN QUESTIONS (answer from the official Resources tab)
+---------------------------------------------------------------------
+  Q1. Which EIC visuals or frames does NASA officially suggest using?
+  Q2. Are specific datasets or APIs recommended for this challenge?
+  Q3. What is the exact judging rubric and submission deadline?
+  Q4. Are there licence rules for reusing EIC images in the project?
+
+=====================================================================
+END OF PRD
+=====================================================================

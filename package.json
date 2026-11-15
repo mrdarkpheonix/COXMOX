@@ -1,0 +1,23 @@
+{
+  "name": "the-coxmox-earth-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Accessible NASA Earth events map and voice-first hazard assistant.",
+  "scripts": {
+    "dev": "vite --config vite.config.js --host 127.0.0.1",
+    "start": "npm run dev",
+    "build": "vite build --config vite.config.js",
+    "preview": "vite preview --config vite.config.js --host 127.0.0.1",
+    "presentation": "node scripts/create-presentation.js"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4"
+  },
+  "devDependencies": {
+    "pptxgenjs": "^4.0.1",
+    "vite": "^6.4.1"
+  },
+  "overrides": {
+    "image-size": "^2.1.0"
+  }
+}

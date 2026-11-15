@@ -1,0 +1,93 @@
+THE COXMOX - CHANGE AND RECOVERY LOG
+====================================
+
+Purpose
+-------
+Record setup changes made so the project can be understood and recovered.
+The original product/resource documents are kept in DATA\. The application
+source files were updated in place, not removed.
+
+Changes made
+------------
+1. Added package.json with npm dev, start, build, and preview scripts.
+   Dependencies: Vite (development/build tool) and Leaflet (map library).
+2. Added vite.config.js. Vite serves DATA\ as the app root and writes
+   production output to dist\.
+3. Updated DATA\index.html to load the app as a Vite module and removed
+   external Leaflet script/style references.
+4. Updated DATA\app.js to import Leaflet and its stylesheet from npm.
+5. Added .gitignore for node_modules\, dist\, and npm debug logs.
+6. Added RUN_EARTH_JUKEBOX.bat. It checks Node.js/npm, runs npm install
+   when Vite is not installed locally, then starts the app.
+7. Added GUIDE.txt with setup, usage, accessibility, and safety details.
+8. Added PRESENTATION_SCRIPT.txt with a concise live demo script.
+9. Added this recovery/change log.
+10. Rebuilt the page layout as a responsive Earth signals dashboard with
+    map, event player, selected-event details, data status, and settings.
+11. Added Instrumental and Vocal agent modes. Instrumental playback now
+    uses distinct musical patterns and synthesized timbres for NASA EONET
+    event categories; Vocal mode speaks event descriptions.
+12. Updated the user guide and presentation script to explain the new modes.
+13. Added 14 original local WAV loops in DATA\audio\ and switched
+    instrumental playback to these assets, with playback-rate variation,
+    a visible loading/playing state, and an error message if playback fails.
+14. Added scripts\create-presentation.js and the `npm run presentation`
+    command to generate an editable 10-slide project PowerPoint.
+15. Added pptxgenjs as a development dependency and overrode image-size to
+    a patched version after npm audit identified vulnerable transitive code.
+
+Original project files retained
+-------------------------------
+DATA\PRD.txt
+DATA\RESOURCES_GUIDE.txt
+DATA\style.css
+DATA\index.html (updated)
+DATA\app.js (updated)
+
+Recovery / clean setup
+----------------------
+1. Install Node.js LTS (npm is included).
+2. From the project folder run:
+       npm install
+       npm run dev
+3. To verify a production build:
+       npm run build
+4. To discard generated local outputs, remove only the project-local
+   node_modules\ and dist\ directories, then run npm install again.
+
+The npm install command will create package-lock.json with exact resolved
+versions. Preserve package.json and package-lock.json together for repeatable
+installs. No credentials or API keys are required by the current application.
+
+Validation status at log creation
+---------------------------------
+Node.js v24.20.0 and npm v11.19.0 were installed for this workspace. The
+first npm install attempt could not see the newly added PATH, so the runtime
+directory was added to the validation process PATH. `npm install` then
+completed, generated package-lock.json, and reported zero vulnerabilities.
+`npm run build` succeeded with Vite 6.4.6. A local development server
+returned HTTP 200 for both the app page and app module. The smoke-test server
+was stopped after validation.
+
+Latest UI and mode verification
+-------------------------------
+After the interface redesign, `npm run build` succeeded again. Browser
+validation loaded live NASA EONET events, selected an event in Vocal mode,
+and confirmed the Vocal Agent label and event narration. Switching to
+Instrumental mode confirmed the Play selected signal control and the event's
+mapped instrument label (Marimba for Wildfires). Stop and mode switching
+were also exercised. The browser's NOAA ONI request was blocked by the
+source's CORS policy; the UI retains its existing clear unavailable-data
+message for that source.
+
+Audio playback fix
+------------------
+The production build includes all 14 local WAV files from DATA\audio\.
+Browser validation selected a live wildfire and confirmed the button state
+changed to "Marimba playing"; Stop reset it to "Play selected signal".
+
+Presentation generation
+-----------------------
+`npm run presentation` generated THE_COXMOX_PROJECT_PRESENTATION.pptx.
+The ZIP-based PowerPoint file was verified to contain 10 slide XML files.
+`npm audit` reported zero vulnerabilities after the image-size override.

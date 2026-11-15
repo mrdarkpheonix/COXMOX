@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101a22" />
+  <title>The Coxmox | Earth signals, made audible</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to dashboard</a>
+
+  <header class="topbar">
+    <a class="brand" href="#main" aria-label="The Coxmox home">
+      <span class="brand-mark" aria-hidden="true">C</span>
+      <span class="brand-copy">
+        <span class="brand-kicker">EARTH SIGNALS / COXMOX</span>
+        <span class="brand-name">The Coxmox</span>
+      </span>
+    </a>
+    <div class="topbar-right">
+      <p class="connection"><span class="connection-dot" aria-hidden="true"></span><span id="status" role="status">Connecting to Earth data…</span></p>
+      <button id="start" type="button" class="location-button" aria-describedby="say">Enable location</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <p class="eyebrow"><span class="eyebrow-line"></span> A NEW WAY TO EXPERIENCE OUR PLANET</p>
+        <h1 id="page-title">Earth, in a<br /><em>different frequency.</em></h1>
+        <p class="intro-description">Explore natural events as they unfold. Choose a sound mode, select a signal, and discover the story behind it.</p>
+      </div>
+
+      <div class="mode-card">
+        <div class="mode-card-heading">
+          <div>
+            <p class="eyebrow">HOW DO YOU WANT TO LISTEN?</p>
+            <p class="mode-title">Choose your experience</p>
+          </div>
+          <span class="mode-live"><span aria-hidden="true"></span> LIVE</span>
+        </div>
+        <div class="mode-switch" role="group" aria-label="Sound mode">
+          <button id="mode-instrumental" type="button" class="mode-option is-active" aria-pressed="true">
+            <span class="mode-symbol instrumental-symbol" aria-hidden="true">♫</span>
+            <span><strong>Instrumental</strong><small>One instrument per event</small></span>
+          </button>
+          <button id="mode-vocal" type="button" class="mode-option" aria-pressed="false">
+            <span class="mode-symbol vocal-symbol" aria-hidden="true">Aa</span>
+            <span><strong>Vocal agent</strong><small>Hear events described aloud</small></span>
+          </button>
+        </div>
+        <p id="mode-description" class="mode-description">Every event type has its own synthesized instrument and musical phrase.</p>
+      </div>
+    </section>
+
+    <section class="overview" aria-label="Earth events overview">
+      <div class="overview-item">
+        <span class="overview-label">EVENTS ON THE MAP</span>
+        <strong id="event-count">--</strong>
+      </div>
+      <span class="overview-divider" aria-hidden="true"></span>
+      <div class="overview-item">
+        <span class="overview-label">DATA SOURCE</span>
+        <strong class="overview-text">NASA EONET</strong>
+      </div>
+      <span class="overview-divider" aria-hidden="true"></span>
+      <div class="overview-item overview-updated">
+        <span class="overview-label">LAST UPDATED</span>
+        <strong id="updated-time" class="overview-text">Waiting for data</strong>
+      </div>
+      <span class="overview-note"><span aria-hidden="true">◉</span> An ever-changing planet</span>
+    </section>
+
+    <div class="dashboard">
+      <section class="map-panel panel" aria-labelledby="map-title">
+        <div class="panel-heading map-heading">
+          <div>
+            <p class="eyebrow">GLOBAL VIEW</p>
+            <h2 id="map-title">Signals around the world</h2>
+          </div>
+          <div class="map-filters">
+            <label class="filter-label" for="cat">Event type</label>
+            <select id="cat" aria-label="Filter events by type">
+              <option value="all">All events</option>
+            </select>
+            <label class="toggle-filter">
+              <input type="checkbox" id="india" />
+              <span class="toggle-track" aria-hidden="true"></span>
+              <span>India only</span>
+            </label>
+          </div>
+        </div>
+        <div class="map-wrap">
+          <div id="map" aria-label="Interactive world map of current natural events"></div>
+          <div class="map-legend"><span class="legend-dot"></span> Active event <span class="legend-separator">·</span> Select a marker to listen</div>
+        </div>
+        <div class="map-caption">
+          <span>NASA EOSDIS GIBS imagery</span>
+          <span>Map markers represent reported event locations</span>
+        </div>
+      </section>
+
+      <aside class="side-column" aria-label="Event player and event details">
+        <section class="player-panel panel" aria-labelledby="player-title">
+          <div class="panel-heading compact-heading">
+            <div>
+              <p class="eyebrow">YOUR LISTENING STATION</p>
+              <h2 id="player-title">Earth signal player</h2>
+            </div>
+            <span id="player-mode" class="mode-tag">INSTRUMENTAL</span>
+          </div>
+
+          <div class="now-playing">
+            <div class="sound-art" aria-hidden="true">
+              <span class="sound-ring ring-one"></span>
+              <span class="sound-ring ring-two"></span>
+              <span class="sound-core">C</span>
+            </div>
+            <div class="now-playing-copy">
+              <span class="eyebrow">NOW EXPLORING</span>
+              <p id="say">Choose an event from the map or list to begin.</p>
+              <span id="instrument-label" class="instrument-label">Choose an event to see its instrument</span>
+            </div>
+          </div>
+
+          <div class="player-actions">
+            <button id="play-selected" type="button" class="play-button">
+              <span aria-hidden="true">▶</span><span id="play-label">Play selected signal</span>
+            </button>
+            <button id="stop" type="button" class="stop-button">Stop</button>
+          </div>
+
+          <div class="player-divider"></div>
+          <p class="agent-label">ASK THE EARTH AGENT</p>
+          <div class="agent-actions">
+            <button id="mic" type="button" class="agent-button" aria-pressed="false"><span aria-hidden="true">●</span> Voice command <kbd>V</kbd></button>
+            <button id="nearby" type="button" class="agent-button">Nearby <kbd>N</kbd></button>
+            <button id="guide" type="button" class="agent-button">Guidance <kbd>G</kbd></button>
+            <button id="predict" type="button" class="agent-button">Storm trend <kbd>P</kbd></button>
+          </div>
+          <p class="agent-hint">Ask about nearby events, guidance, or current conditions. Voice input works in supported browsers.</p>
+        </section>
+
+        <section class="event-panel panel" aria-labelledby="event-title">
+          <div class="panel-heading compact-heading">
+            <div>
+              <p class="eyebrow">FROM NASA EONET</p>
+              <h2 id="event-title">Current events</h2>
+            </div>
+            <span id="list-count" class="count-tag">0</span>
+          </div>
+          <div id="detail" class="event-detail" aria-live="polite">
+            <span class="detail-accent" aria-hidden="true"></span>
+            <div><strong>No event selected</strong><p>Select an event to see its latest details.</p></div>
+          </div>
+          <ul id="list" class="event-list" aria-label="Current natural events"></ul>
+          <p id="empty-events" class="empty-state" hidden>No events match this filter. Try another event type.</p>
+        </section>
+
+        <section class="climate-panel panel" aria-labelledby="climate-title">
+          <div class="climate-icon" aria-hidden="true">↗</div>
+          <div>
+            <p class="eyebrow">CLIMATE CONTEXT · NOAA</p>
+            <h2 id="climate-title">Ocean watch</h2>
+            <p id="enso">Checking El Niño / La Niña status…</p>
+          </div>
+        </section>
+
+        <details class="settings-panel">
+          <summary>Preferences and alert radius</summary>
+          <div class="settings-content">
+            <label for="radius">Nearby event radius</label>
+            <select id="radius">
+              <option value="100">100 km</option>
+              <option value="300">300 km</option>
+              <option value="500" selected>500 km</option>
+              <option value="1000">1,000 km</option>
+            </select>
+            <label class="eco-label"><input type="checkbox" id="eco" /> Eco mode <span>Refresh less often and shorten music</span></label>
+          </div>
+        </details>
+      </aside>
+    </div>
+  </main>
+
+  <div id="live" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+
+  <footer>
+    <span>THE COXMOX <span class="footer-divider">/</span> EARTH SIGNALS, MADE AUDIBLE</span>
+    <span>Educational prototype, not an official NASA product or warning system. Follow local authorities.</span>
+  </footer>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+THE COXMOX - SHORT PRESENTATION SCRIPT
+======================================
+Approximate duration: 1-2 minutes
+
+[Opening - show the world map]
+"This is The Coxmox: an accessible way to explore changing conditions on
+Earth through a map, spoken information, and sound. It is an educational
+prototype created for the Earth Information Jukebox challenge."
+
+[Show the mode switch, event list, and a selected marker]
+"The app loads open natural-event reports from NASA's EONET service and
+plots events on a world map. You can filter by event category, then choose
+between two experiences. Instrumental mode gives each event type a distinct
+musical instrument and phrase, such as marimba for wildfires, piano for
+floods, and bells for sea ice. Vocal mode uses a speaking agent to describe
+the selected event. If live event data is unavailable, the app falls back
+to clearly identified sample data."
+
+[Show controls]
+"The controls are designed to work with a keyboard and assistive
+technology. Supported browsers can accept voice commands. Location is
+optional: with permission, the app can
+estimate distance and direction to reported events; alternatively, you can
+click the map to set a point manually."
+
+[Show climate context and status]
+"A separate panel shows the latest available NOAA ONI reading as broad
+climate context. Eco mode reduces refresh frequency and shortens the
+sonification."
+
+[Closing]
+"The sound is an artistic interpretation, not a scientific instrument.
+The app is not an official NASA product, warning service, or forecast.
+Its simple storm trend estimate can be wrong, so users should always rely
+on local authorities for safety decisions. The goal is to make Earth data
+more approachable through multiple senses while being clear about limits."
+
+DEMO CHECKLIST
+--------------
+* Start the app before presenting; confirm the live-data or demo-data status.
+* Have one event ready to select and play.
+* Demonstrate one filter and one keyboard shortcut (for example H or N).
+* Request location only if the presenter has chosen to share it.
+* Do not describe the storm trend estimate as a forecast or safety warning.

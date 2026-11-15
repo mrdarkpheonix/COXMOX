@@ -1,0 +1,218 @@
+=====================================================================
+RESOURCES GUIDE
+THE EARTH JUKEBOX - NASA Space Apps Challenge 2026
+=====================================================================
+
+READ THIS FIRST (honest status)
+The official challenge page and its Resources tab could NOT be read by my
+tools (the site blocks automated access). So this guide is NOT a copy of
+the official Resources tab. It is built from:
+  [S1] Pages I did read this session (marked "READ").
+  [S2] Well-known NASA services I am confident exist, but did NOT open
+       this session (marked "KNOWN - check it opens").
+Please open the official Resources tab and paste its contents to me, and I
+will merge them into this guide:
+  https://www.spaceappschallenge.org/2026/challenges/the-earth-information-jukebox/?tab=resources
+
+---------------------------------------------------------------------
+A. OFFICIAL CHALLENGE PAGES
+---------------------------------------------------------------------
+Challenge page (open in your browser; not readable by my tools)
+  https://www.spaceappschallenge.org/2026/challenges/the-earth-information-jukebox/
+Resources tab (same note)
+  https://www.spaceappschallenge.org/2026/challenges/the-earth-information-jukebox/?tab=resources
+Space Apps home
+  https://www.spaceappschallenge.org/
+
+---------------------------------------------------------------------
+B. NASA VISUALS TO PAIR WITH SOUND
+---------------------------------------------------------------------
+NASA Earth Information Center (EIC)             [READ, named in the
+  https://earth.gov                              challenge; URL from a
+                                                 team repo]
+  Source of the "stunning visualizations" the challenge refers to.
+
+NASA Scientific Visualization Studio (SVS)      [READ, named in a team
+  Daily visualizations                           repo]
+  https://svs.gsfc.nasa.gov/gallery/daily-visualizations
+  Main dashboard
+  https://svs.gsfc.nasa.gov/gallery/main-dashboard
+  Many animations come with downloadable frames and usage notes.
+
+NASA Worldview (browse and download satellite imagery)   [KNOWN]
+  https://worldview.earthdata.nasa.gov
+
+NASA Earth Observatory images                    [KNOWN]
+  https://earthobservatory.nasa.gov
+
+NASA image usage guidelines (check before reusing images)   [KNOWN]
+  https://www.nasa.gov/nasa-brand-center/images-and-media/
+
+---------------------------------------------------------------------
+C. DATA AND APIs (for live / real data)
+---------------------------------------------------------------------
+NASA GIBS - map imagery as web tiles / WMS       [READ, in a team repo]
+  WMS endpoint:
+  https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi
+  WMTS capabilities (find layers and dates):
+  https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/1.0.0/WMTSCapabilities.xml
+  Colormaps (convert pixel colours back to data values):
+  https://gibs.earthdata.nasa.gov/colormaps/v1.3/
+  Example layer ID used by one team (monthly land surface temperature):
+  MODIS_Terra_L3_Land_Surface_Temp_Monthly_Day
+  Tile pattern used in my Coxmox prototype (works in Leaflet):
+  https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/<LAYER>/default/<DATE>/GoogleMapsCompatible_Level<N>/{z}/{y}/{x}.<jpg|png>
+
+NASA EONET - live natural events (wildfires, storms, volcanoes...)
+  API (used in my prototypes, free, no key):
+  https://eonet.gsfc.nasa.gov/api/v3/events?status=open       [KNOWN]
+  Docs: https://eonet.gsfc.nasa.gov/docs/v3                    [KNOWN]
+  Note: my tools could not reach this API from my workspace, so I could
+  not confirm the response format live. Test it in your browser.
+
+NASA GISS Surface Temperature Analysis (GISTEMP) - global warming data
+  https://data.giss.nasa.gov/gistemp/                          [KNOWN]
+  A third-party team repo used the annual global anomaly series (1880+).
+
+NASA Earthdata Search and Earthdata main site
+  https://search.earthdata.nasa.gov                            [KNOWN]
+  https://www.earthdata.nasa.gov                               [KNOWN]
+  (Some downloads need a free Earthdata Login account.)
+
+NASA POWER - daily weather/solar data for any location
+  https://power.larc.nasa.gov/docs/                            [KNOWN]
+  Used by a third-party team for Dhaka temperature history.
+
+NSIDC - sea ice data (NASA-supported data centre)
+  https://nsidc.org/data                                       [KNOWN]
+  A third-party team used NSIDC sea ice for "Arctic vs Antarctic".
+
+NASA FIRMS - active fire data                                [KNOWN]
+  https://firms.modaps.eosdis.nasa.gov
+
+NASA Climate "Vital Signs" (temperature, sea level, CO2, ice) [KNOWN]
+  https://climate.nasa.gov/vital-signs/
+
+NASA SVS API (the search hit showed SVS API URLs)             [seen in
+  https://svs.gsfc.nasa.gov/api/                              search only]
+
+Data source used by one team (NASA GMAO air-quality / weather videos)
+  Listed in a team repo as "NASA SVS Earth Now Dashboard". [READ, team
+  repo, not verified]
+
+Why these matter: pick data that has BOTH a NASA picture and a number
+series, so the image and the sound match.
+
+---------------------------------------------------------------------
+D. SONIFICATION: LEARN HOW TO TURN DATA INTO SOUND
+---------------------------------------------------------------------
+NASA Earthdata blog: "Data sonification and open science"      [READ]
+  https://www.earthdata.nasa.gov/learn/blog/data-sonification-open-science
+  Key ideas from the article:
+   - Sound has a time dimension, so it suits time-series science data.
+   - It can make science accessible to people with visual impairments.
+   - Example: NDVI (vegetation) values for central Iowa mapped to MIDI
+     chords; seasonal change can be heard.
+   - Example: temperature "warming stripes" sonified.
+   - Method: values mapped to MIDI note numbers (higher value -> lower
+     note) and to chord loudness (velocity 35 to 127).
+   - Open questions: standard methods, easier tools, how people perceive
+     sonified data.
+
+NASA "Explore - From Space to Sound"                           [READ,
+  https://www.nasa.gov/content/explore-from-space-to-sound      linked from
+                                                                 the blog]
+NASA-IMPACT data sonification source code (GitHub)             [READ,
+  https://github.com/NASA-IMPACT/data_sonification              linked from
+                                                                 the blog]
+Harmonized Landsat Sentinel-2 (HLS)                            [READ,
+  https://www.earthdata.nasa.gov/esds/harmonized-landsat-sentinel-2  linked]
+
+NASA Data Sonifications (Chandra, Webb, etc.)                  [KNOWN]
+  https://chandra.si.edu/sound/
+  (Space sonifications; good for inspiration and for what NASA's own
+  work sounds like. One team also cited "NASA Data Sonifications".)
+
+Warming stripes (Ed Hawkins) - an idea for a temperature-by-year view
+  https://showyourstripes.info                                 [KNOWN]
+
+---------------------------------------------------------------------
+E. BUILDING THE REACT APP
+---------------------------------------------------------------------
+React docs                    https://react.dev                [KNOWN]
+Vite (project setup)          https://vite.dev                 [KNOWN]
+  Command: npm create vite@latest earth-jukebox -- --template react
+Tone.js (music in the browser, optional)
+  https://tonejs.github.io                                     [KNOWN]
+Web Audio API (MDN)
+  https://developer.mozilla.org/docs/Web/API/Web_Audio_API     [KNOWN]
+Web Speech API (voice output and commands, MDN)
+  https://developer.mozilla.org/docs/Web/API/Web_Speech_API    [KNOWN]
+Leaflet (maps) with react-leaflet
+  https://leafletjs.com   https://react-leaflet.js.org         [KNOWN]
+Recharts (simple charts in React)
+  https://recharts.org                                         [KNOWN]
+Deploy free: Netlify https://www.netlify.com
+             Vercel  https://vercel.com                        [KNOWN]
+
+---------------------------------------------------------------------
+F. ACCESSIBILITY REFERENCES (for the "easy access" theme)
+---------------------------------------------------------------------
+WCAG 2.2 quick reference
+  https://www.w3.org/WAI/WCAG22/quickref/                      [KNOWN]
+ARIA Authoring Practices (patterns for sliders, buttons, etc.)
+  https://www.w3.org/WAI/ARIA/apg/                             [KNOWN]
+WebAIM contrast checker
+  https://webaim.org/resources/contrastchecker/                [KNOWN]
+Free screen readers to test with: NVDA (Windows), TalkBack (Android),
+VoiceOver (built in to iPhone and Mac).
+Lighthouse (built into Chrome DevTools) for an accessibility score.
+
+---------------------------------------------------------------------
+G. OTHER TEAMS' PUBLIC PROJECTS (for awareness, do not copy)
+---------------------------------------------------------------------
+Seen in search results this session. Their code and ideas belong to them;
+use them to see what is common and then differ. Check each licence.
+  - Earth Jukebox (MindWave): colour of NASA videos -> instruments
+    https://github.com/winlu2303/earth-jukebox
+  - Earth Jukebox: GISTEMP temperature sonification (1880-2025)
+    https://github.com/jaherunhasanrimon/NasaSpaceApp1stPrototype_Earth-Jukebox-Listen-to-a-Changing-Planet
+  - Earth Jukebox: Web Audio, timeline, "Then vs Now"
+    https://github.com/Sharanya1807/earth-jukebox-nasa-space-apps-2026
+  - Earth Jukebox: sea ice and temperature, multilingual, accessible
+    https://github.com/yassine777y/earthvibe-1.1.1-data
+  - Prism Tone: Tone.js + FastAPI
+    https://github.com/CrimsonCompiler/Prism-Tone
+  - A team for blind users with an AI voice assistant (Python engine)
+    https://github.com/Raiyan-Noor/team_spaced_out_earth_information_jukebox
+    (Notes from this repo: Space Apps requires event code to stay open
+    source; they had not yet tested with blind listeners.)
+What this tells you: the common ideas are temperature + Web Audio +
+timeline. Your differences: an instrument per topic, a simple screen-
+reader-first UI, and the live EONET orchestra.
+
+---------------------------------------------------------------------
+H. SOURCES CHECKED THIS SESSION
+---------------------------------------------------------------------
+READ:
+  - edeon.sonoma.edu/nasaspaceapps-26 (quoted the challenge statement)
+  - earthdata.nasa.gov blog on data sonification
+  - github.com/Raiyan-Noor/team_spaced_out_earth_information_jukebox
+    (its table of NASA resource links)
+BLOCKED / NOT READ:
+  - spaceappschallenge.org challenge page and Resources tab (blocked by
+    the site)
+  - github.com/NASA-space-app-challenge-2026/shkim (error)
+LISTED BY SEARCH ONLY (titles/URLs, content not opened):
+  - svs.gsfc.nasa.gov gallery pages, NASA Earth Information Center pages
+
+---------------------------------------------------------------------
+I. WHAT TO DO NEXT
+---------------------------------------------------------------------
+1. Open the official Resources tab and copy its list into a message to me.
+2. I will merge it here and update PRD section 19 (open questions).
+3. Test the data URLs in your browser before building on them.
+
+=====================================================================
+END OF RESOURCES GUIDE
+=====================================================================
