@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101a22" />
+  <title>Disaster archive | The Coxmox</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#archive-main">Skip to disaster archive</a>
+
+  <header class="topbar">
+    <a class="brand" href="./index.html" aria-label="The Coxmox home">
+      <span class="brand-mark" aria-hidden="true">C</span>
+      <span class="brand-copy">
+        <span class="brand-kicker">EARTH SIGNALS / COXMOX</span>
+        <span class="brand-name">The Coxmox</span>
+      </span>
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="./index.html">Live map</a>
+      <a href="./archive.html" aria-current="page">Disaster archive</a>
+    </nav>
+  </header>
+
+  <main id="archive-main" class="archive-main">
+    <section class="archive-intro" aria-labelledby="archive-title">
+      <p class="eyebrow">NASA EONET · GDACS GLOBAL DISASTER REPORTS</p>
+      <h1 id="archive-title">Disaster history, with sources.</h1>
+      <p>Explore reported events by week, month, or year. Intensity, causes, impacts, deaths, displacement, and population exposure appear only when a source reports them.</p>
+    </section>
+
+    <section class="archive-controls panel" aria-label="Historical event filters">
+      <div class="archive-filter">
+        <label for="archive-period">Time window</label>
+        <select id="archive-period">
+          <option value="weekly">Weekly</option>
+          <option value="monthly" selected>Monthly</option>
+          <option value="yearly">Yearly</option>
+        </select>
+      </div>
+      <div class="archive-filter">
+        <label for="archive-date">Date in the period</label>
+        <input id="archive-date" type="date" />
+      </div>
+      <button id="archive-load" class="archive-load-button" type="button">Load records</button>
+      <p id="archive-range" class="archive-range"></p>
+    </section>
+
+    <p id="archive-status" class="archive-status" role="status" aria-live="polite">Loading historical disaster records…</p>
+    <p id="archive-count" class="archive-count"></p>
+    <div id="archive-list" class="archive-list" aria-live="polite"></div>
+    <p id="archive-empty" class="archive-empty" hidden>No records were returned for this period. Try a different date range.</p>
+
+    <aside class="archive-source-note" aria-label="Data interpretation and sources">
+      <h2>Read the data carefully</h2>
+      <p>NASA EONET event magnitudes and GDACS alert, impact, death, and displacement fields are shown as reported. GDACS population exposure is an estimate of people in a hazard area, not a count of people confirmed affected. Causes and totals are marked “Not reported” when the datasets do not provide them.</p>
+      <p>
+        Sources:
+        <a href="https://eonet.gsfc.nasa.gov/docs/v3" target="_blank" rel="noopener noreferrer">NASA EONET API</a>
+        · <a href="https://www.gdacs.org/gdacsapi/swagger/index.html" target="_blank" rel="noopener noreferrer">GDACS API</a>
+        · <a href="https://www.mediawiki.org/wiki/API:Search" target="_blank" rel="noopener noreferrer">Wikipedia search API</a>
+      </p>
+    </aside>
+  </main>
+
+  <footer>
+    <span>THE COXMOX <span class="footer-divider">/</span> EARTH SIGNALS, MADE AUDIBLE</span>
+    <span>Educational information only. Follow local authorities for safety decisions.</span>
+  </footer>
+
+  <script type="module" src="./archive.js"></script>
+</body>
+</html>

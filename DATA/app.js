@@ -7,6 +7,10 @@ import "leaflet/dist/leaflet.css";
   /* ================= Config ================= */
   const EONET_URL = "https://eonet.gsfc.nasa.gov/api/v3/events?status=open&limit=150";
   const ONI_URL = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt";
+  const EARTH_TEXTURE_URL =
+    "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?" +
+    "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=BlueMarble_ShadedRelief_Bathymetry" +
+    "&STYLES=&FORMAT=image%2Fjpeg&SRS=EPSG%3A4326&BBOX=-180%2C-90%2C180%2C90&WIDTH=2048&HEIGHT=1024";
   const REFRESH_NORMAL = 10 * 60 * 1000; // 10 minutes
   const REFRESH_ECO = 30 * 60 * 1000;    // 30 minutes
   const reduceMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -91,6 +95,9 @@ import "leaflet/dist/leaflet.css";
   const els = {
     start: $("start"), mic: $("mic"), nearby: $("nearby"), guide: $("guide"),
     predict: $("predict"), stop: $("stop"), say: $("say"), live: $("live"),
+    map: $("map"),
+    mapView2d: $("map-view-2d"), mapView3d: $("map-view-3d"),
+    mapViewStatus: $("map-view-status"), globeView: $("globe-view"),
     radius: $("radius"), cat: $("cat"), india: $("india"),
     eco: $("eco"), enso: $("enso"), status: $("status"), detail: $("detail"), list: $("list"),
     modeInstrumental: $("mode-instrumental"), modeVocal: $("mode-vocal"),
@@ -124,6 +131,9 @@ import "leaflet/dist/leaflet.css";
   let activeNearbyAlert = null;
   let pendingAlertAudio = null;
   let lastNearbyCheck = 0;
+  let globe = null;
+  let globePromise = null;
+  let mapView = "2d";
   let ensoState = null;
 
   /* ================= Map ================= */
@@ -143,6 +153,101 @@ import "leaflet/dist/leaflet.css";
   L.control.layers({ "Blue Marble": blueMarble, "Today's satellite view": trueColor }).addTo(map);
 
   const markerLayer = L.layerGroup().addTo(map);
+
+  function globePoints() {
+    const wantCat = els.cat.value;
+    const onlyIndia = els.india.checked;
+    const points = events.filter((ev) => {
+      const p = position(ev);
+      return p && (wantCat === "all" || catId(ev) === wantCat) && (!onlyIndia || inIndia(p));
+    }).map((ev) => {
+      const p = position(ev);
+      return p ? { ev, p, isUser: false } : null;
+    }).filter(Boolean);
+    if (user) points.push({ ev: null, p: user, isUser: true });
+    return points;
+  }
+
+  function updateGlobePoints() {
+    if (globe) globe.pointsData(globePoints());
+  }
+
+  function resizeGlobe() {
+    if (!globe || mapView !== "3d") return;
+    const bounds = els.globeView.getBoundingClientRect();
+    if (bounds.width && bounds.height) {
+      globe.width(Math.floor(bounds.width)).height(Math.floor(bounds.height));
+    }
+  }
+
+  function createGlobe() {
+    if (globe) return Promise.resolve(globe);
+    if (!globePromise) {
+      globePromise = import("globe.gl").then(({ default: Globe }) => {
+        globe = new Globe(els.globeView, { animateIn: false, rendererConfig: { antialias: true, alpha: true } })
+          .globeImageUrl(EARTH_TEXTURE_URL)
+          .backgroundColor("#0b151d")
+          .showAtmosphere(true)
+          .atmosphereColor("#6fbad1")
+          .atmosphereAltitude(0.14)
+          .pointsMerge(false)
+          .pointLat((point) => point.p.lat)
+          .pointLng((point) => point.p.lon)
+          .pointColor((point) => point.isUser ? "#2dd4bf" : (COLORS[catId(point.ev)] || COLORS.default))
+          .pointAltitude((point) => point.isUser ? 0.025 : 0.012)
+          .pointRadius((point) => point.isUser ? 0.42 : 0.3)
+          .pointLabel((point) => {
+            const label = document.createElement("span");
+            label.textContent = point.isUser ? "Your selected location" : point.ev.title;
+            return label;
+          })
+          .onPointClick((point) => {
+            if (point.ev) selectEvent(point.ev);
+          })
+          .pointOfView({ lat: 20, lng: 30, altitude: 2.5 }, 0);
+        updateGlobePoints();
+        window.addEventListener("resize", resizeGlobe);
+        return globe;
+      }).catch((error) => {
+        globePromise = null;
+        throw error;
+      });
+    }
+    return globePromise;
+  }
+
+  async function setMapView(mode) {
+    if (mode === "3d") {
+      els.map.hidden = true;
+      els.globeView.hidden = false;
+      mapView = "3d";
+      try {
+        await createGlobe();
+        if (mapView !== "3d") return;
+        els.mapView2d.setAttribute("aria-pressed", "false");
+        els.mapView3d.setAttribute("aria-pressed", "true");
+        els.mapViewStatus.textContent = "Interactive 3D globe selected. Drag to rotate and use the mouse wheel or pinch to zoom.";
+        requestAnimationFrame(resizeGlobe);
+      } catch (error) {
+        console.error("Could not initialize the 3D globe:", error);
+        if (mapView !== "3d") return;
+        mapView = "2d";
+        els.map.hidden = false;
+        els.globeView.hidden = true;
+        els.mapView2d.setAttribute("aria-pressed", "true");
+        els.mapView3d.setAttribute("aria-pressed", "false");
+        els.mapViewStatus.textContent = "The 3D globe could not start in this browser. The 2D map remains available.";
+      }
+      return;
+    }
+    mapView = "2d";
+    els.map.hidden = false;
+    els.globeView.hidden = true;
+    els.mapView2d.setAttribute("aria-pressed", "true");
+    els.mapView3d.setAttribute("aria-pressed", "false");
+    els.mapViewStatus.textContent = "2D map view selected.";
+    requestAnimationFrame(() => map.invalidateSize());
+  }
 
   /* ================= Event helpers ================= */
   const latest = (ev) => ev.geometry[ev.geometry.length - 1];
@@ -688,7 +793,10 @@ import "leaflet/dist/leaflet.css";
     });
     els.detail.append(accent, content);
 
-    if (p) map.flyTo([p.lat, p.lon], Math.max(map.getZoom(), 4), { animate: !reduceMotion });
+    if (p) {
+      map.flyTo([p.lat, p.lon], Math.max(map.getZoom(), 4), { animate: !reduceMotion });
+      if (globe) globe.pointOfView({ lat: p.lat, lng: p.lon, altitude: 1.8 }, 700);
+    }
     updateModeUI();
     Array.from(els.list.querySelectorAll("button")).forEach((button) => {
       if (button.dataset.eventId === String(ev.id)) button.setAttribute("aria-current", "true");
@@ -748,6 +856,7 @@ import "leaflet/dist/leaflet.css";
     els.emptyEvents.hidden = shown.length > 0;
     els.updatedTime.textContent = updatedAt || (events.length ? "Demo data" : "Waiting for data");
     els.status.textContent = shown.length + " events shown" + (updatedAt ? " · updated " + updatedAt : "");
+    updateGlobePoints();
   }
 
   function fillCategories() {
@@ -1043,6 +1152,8 @@ import "leaflet/dist/leaflet.css";
   els.stop.addEventListener("click", stopAll);
   els.setCustomLocation.addEventListener("click", chooseCustomCoordinates);
   els.useDeviceLocation.addEventListener("click", chooseDeviceLocation);
+  els.mapView2d.addEventListener("click", () => setMapView("2d"));
+  els.mapView3d.addEventListener("click", () => setMapView("3d"));
   els.alertRetry.addEventListener("click", retryAlertAudio);
   els.alertSpeakNow.addEventListener("click", speakPendingAlert);
   els.alertStop.addEventListener("click", stopAll);

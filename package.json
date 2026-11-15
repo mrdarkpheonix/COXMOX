@@ -11,6 +11,7 @@
     "presentation": "node scripts/create-presentation.js"
   },
   "dependencies": {
+    "globe.gl": "^2.46.2",
     "leaflet": "^1.9.4"
   },
   "devDependencies": {

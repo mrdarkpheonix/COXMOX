@@ -16,6 +16,18 @@ floods, and bells for sea ice. Vocal mode uses a speaking agent to describe
 the selected event. If live event data is unavailable, the app falls back
 to clearly identified sample data."
 
+[Switch from the 2D map to the 3D globe]
+"The map has a working 2D and interactive 3D globe view. The globe can be
+rotated and zoomed, and selecting a globe marker opens the same event details
+and listening experience."
+
+[Open Disaster archive and select a period]
+"The archive queries NASA EONET and GDACS for a selected week, month, or year.
+Each card links to its source and shows reported intensity, impacts, deaths,
+displacement, and estimated exposure when available. Missing causes or counts
+are marked as not reported; exposure is not a confirmed count of affected
+people. Wikipedia links are for background only."
+
 [Show controls]
 "The controls are designed to work with a keyboard and assistive
 technology. Supported browsers can accept voice commands. The app asks for
@@ -42,6 +54,7 @@ DEMO CHECKLIST
 --------------
 * Start the app before presenting; confirm the live-data or demo-data status.
 * Have one event ready to select and play.
+* Demonstrate both map views and load a historical archive period.
 * Demonstrate one filter and one keyboard shortcut (for example H or N).
 * Grant location only if the presenter has chosen to share it; browser
   permission is requested automatically at startup.

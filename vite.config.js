@@ -13,5 +13,11 @@ export default defineConfig({
   build: {
     outDir: resolve(projectRoot, "dist"),
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: resolve(projectRoot, "DATA/index.html"),
+        archive: resolve(projectRoot, "DATA/archive.html"),
+      },
+    },
   },
 });

@@ -44,6 +44,18 @@ Changes made
     auto-location and the nearby-event alert sequence.
 19. Added custom latitude/longitude selection and made map clicks an explicit
     override for GPS. Added a control to return to the device location.
+20. Added globe.gl and a lazy-initialized NASA GIBS textured 3D globe. The
+    globe shows filtered live-event markers, opens selected event details,
+    and resizes when the view changes. The existing Leaflet 2D map remains
+    available as a fallback if WebGL initialization fails.
+21. Added a Disaster archive page with weekly, monthly, and yearly filters.
+    It queries NASA EONET and GDACS, paginates GDACS results with a safety
+    cap, shows missing impact fields as not reported, and links each record
+    to its source. Major-event Wikipedia links are explicitly background
+    searches, not sources for reported impact values.
+22. Configured Vite to build both the live dashboard and archive page.
+23. Updated the user guide and presentation script to document 2D/3D views,
+    historical records, data-source limitations, and impact interpretation.
 
 Original project files retained
 -------------------------------
@@ -114,6 +126,30 @@ the device-location button is selected. The speech and timer were accelerated
 only in the browser test; the application retains the requested 20-second
 playback. NOAA ONI access remains subject to the source's existing browser
 CORS limitation.
+
+Globe and archive implementation
+-------------------------------
+The current update adds a lazy-loaded 3D view using globe.gl and NASA GIBS
+imagery, plus a multi-page Vite build for the dashboard and archive. The
+archive combines NASA EONET geometry/magnitudes and GDACS reports for
+inclusive weekly, monthly, or yearly ranges. EONET is limited to 1,000
+records and GDACS to 800 per query; status text discloses a reached cap or
+an unavailable source.
+
+Validation completed
+--------------------
+`npm run build` successfully generated both `dist\index.html` and
+`dist\archive.html`; globe.gl is split into an on-demand chunk. The browser
+loaded NASA GIBS imagery on the interactive globe, verified switching back
+to the Leaflet map, and confirmed filtered event counts update while in 3D.
+Live browser fetches from NASA EONET and GDACS succeeded. The archive loaded
+36 records for January 2024 (30 EONET and 6 GDACS), including source links,
+reported deaths/displacement, exposure estimates, and a Wikipedia search
+for a major earthquake. Browser checks confirmed Monday-Sunday weekly and
+calendar-year date ranges. A full-year query returned 1,000 NASA EONET and
+77 GDACS records and visibly disclosed the EONET result limit.
+`npm run presentation` regenerated the 10-slide PowerPoint with the
+globe/archive features.
 
 Audio playback fix
 ------------------

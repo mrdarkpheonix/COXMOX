@@ -18,6 +18,10 @@
         <span class="brand-name">The Coxmox</span>
       </span>
     </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <a href="./index.html" aria-current="page">Live map</a>
+      <a href="./archive.html">Disaster archive</a>
+    </nav>
     <div class="topbar-right">
       <p class="connection"><span class="connection-dot" aria-hidden="true"></span><span id="status" role="status">Connecting to Earth data…</span></p>
       <button id="start" type="button" class="location-button" aria-describedby="say">Enable location</button>
@@ -78,6 +82,11 @@
           <div>
             <p class="eyebrow">GLOBAL VIEW</p>
             <h2 id="map-title">Signals around the world</h2>
+            <div class="map-view-switch" role="group" aria-label="Map view">
+              <button id="map-view-2d" type="button" aria-pressed="true">2D map</button>
+              <button id="map-view-3d" type="button" aria-pressed="false">3D globe</button>
+            </div>
+            <p id="map-view-status" class="map-view-status" role="status">2D map view selected.</p>
           </div>
           <div class="map-filters">
             <label class="filter-label" for="cat">Event type</label>
@@ -93,6 +102,7 @@
         </div>
         <div class="map-wrap">
           <div id="map" aria-label="Interactive world map of current natural events"></div>
+          <div id="globe-view" class="globe-view" aria-label="Interactive 3D globe of current natural events" hidden></div>
           <div class="map-legend"><span class="legend-dot"></span> Active event <span class="legend-separator">·</span> Select a marker to listen</div>
         </div>
         <div class="map-caption">
@@ -197,6 +207,19 @@
         </details>
       </aside>
     </div>
+
+    <section class="history-preview" aria-labelledby="history-preview-title">
+      <div>
+        <p class="eyebrow">PAST EVENTS · GLOBAL SOURCES</p>
+        <h2 id="history-preview-title">Earth’s disaster history</h2>
+        <p>Browse weekly, monthly, or yearly NASA and GDACS records, with reported intensity, causes, and impacts clearly attributed to their sources.</p>
+      </div>
+      <div class="history-period-links" aria-label="Open historical records">
+        <a href="./archive.html?period=weekly"><strong>Weekly</strong><span>Review a selected week</span></a>
+        <a href="./archive.html?period=monthly"><strong>Monthly</strong><span>Review a selected month</span></a>
+        <a href="./archive.html?period=yearly"><strong>Yearly</strong><span>Review a selected year</span></a>
+      </div>
+    </section>
   </main>
 
   <dialog id="hazard-dialog" class="hazard-dialog" aria-labelledby="alert-title" aria-describedby="alert-summary alert-status">

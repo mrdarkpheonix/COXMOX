@@ -213,6 +213,43 @@ I. WHAT TO DO NEXT
 2. I will merge it here and update PRD section 19 (open questions).
 3. Test the data URLs in your browser before building on them.
 
+---------------------------------------------------------------------
+J. IMPLEMENTED GLOBE AND HISTORICAL ARCHIVE
+---------------------------------------------------------------------
+Interactive 3D globe texture:
+  NASA GIBS WMS layer BlueMarble_ShadedRelief_Bathymetry
+  https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi
+  The layer metadata endpoint responds for this layer. The production app
+  uses a WMS GetMap image as the 3D globe texture. Live browser texture
+  loading still depends on network access and browser WebGL support.
+
+Historical natural-event reports:
+  NASA EONET v3 API (date filters and event geometry/magnitudes):
+  https://eonet.gsfc.nasa.gov/api/v3/events
+  Documentation: https://eonet.gsfc.nasa.gov/docs/v3
+
+Historical disaster-management reports:
+  GDACS AdaptiveCard event-list API:
+  https://www.gdacs.org/gdacsapi/api/AdaptiveCard/geteventlist/data
+  API reference: https://www.gdacs.org/gdacsapi/swagger/index.html
+  ReliefWeb API was not used because it requires an approved appname.
+
+Data interpretation:
+  - The archive requests inclusive weekly, monthly, or yearly date ranges
+    and displays each EONET/GDACS record with its originating source link.
+  - EONET supplies event category and may supply measured magnitude; it
+    does not consistently report causes or people affected.
+  - GDACS may report alert severity, magnitude, impact, deaths, and
+    displacement. Missing values are shown as not reported rather than
+    inferred. Multi-year events may overlap a selected date range.
+  - GDACS "Exposed population" is an estimate of people in a hazard area,
+    not a verified number of people affected.
+  - Wikipedia search links for selected major events are background only;
+    official NASA/GDACS sources remain the source of displayed event data.
+  - EONET queries are capped at 1,000 records. GDACS pagination is capped
+    at eight 100-record pages per request. The archive displays a notice
+    when either cap is reached; narrow the period for more complete results.
+
 =====================================================================
 END OF RESOURCES GUIDE
 =====================================================================

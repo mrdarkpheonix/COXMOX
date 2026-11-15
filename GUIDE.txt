@@ -45,8 +45,9 @@ REQUIREMENTS
     npm --version
 * Internet access for npm installation, NASA/NOAA data, and NASA map tiles.
 * A recent browser. Chrome or Edge provide the best support for voice input.
-  Map interaction, buttons, and keyboard shortcuts remain available without
-  voice input.
+  The interactive globe also requires WebGL; the 2D map remains available
+  if WebGL cannot start. Map interaction, buttons, and keyboard shortcuts
+  remain available without voice input.
 
 FIRST-TIME SETUP
 ----------------
@@ -103,6 +104,13 @@ USER WALKTHROUGH
    and screen-reader announcements. Voice commands require browser support
    and microphone permission.
 7. Enable Eco mode for less frequent data refresh and shorter music.
+8. Use the map's 2D map / 3D globe switch to change views. In 3D, drag
+   to rotate, scroll or pinch to zoom, and select an event marker to open
+   its report. Open Disaster archive from the navigation or the weekly,
+   monthly, and yearly links below the main dashboard. Choose a period and
+   date, then load the NASA EONET and GDACS records for that inclusive range.
+   The archive shows missing impact fields as not reported; GDACS population
+   exposure is an estimate, not a confirmed count of affected people.
 
 KEYBOARD SHORTCUTS
 ------------------
@@ -129,14 +137,23 @@ reported movement and can be inaccurate. Always follow local emergency
 services and official weather authorities. Do not use the app to decide
 whether to evacuate or to delay seeking help.
 
+The archive uses NASA EONET for natural-event reports and GDACS for global
+disaster-management reports. GDACS has reported severity and selected impact
+fields; it does not consistently report causes or affected-person totals.
+Wikipedia search links for major events provide background only and are not
+used to calculate impact values. Each record links to its original source.
+
 PROJECT LAYOUT
 --------------
 DATA\index.html          Accessible page shell and controls
 DATA\app.js              NASA/NOAA data, map, voice, and sound behavior
+DATA\archive.html        Historical disaster archive page
+DATA\archive.js          NASA EONET/GDACS period queries and source-attributed records
 DATA\style.css           Responsive visual styling
 DATA\audio\              Local instrument WAV tracks and their notes
 DATA\PRD.txt             Product requirements and planned features
 DATA\RESOURCES_GUIDE.txt NASA data, imagery, and accessibility references
+globe.gl                 Interactive 3D Earth view dependency (npm)
 package.json             npm scripts and runtime dependencies
 package-lock.json        Exact npm dependency versions (created by npm install)
 vite.config.js           Vite root and production output configuration

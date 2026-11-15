@@ -245,7 +245,8 @@ function addMapMock(slide, x, y, w, h) {
   section(slide, "03  /  Product experience", "A calm dashboard for exploring live Earth events", "A responsive map, focused player, and readable event list keep the next action clear.");
   addMapMock(slide, 0.72, 2.67, 7.25, 3.65);
   pill(slide, "GLOBAL EVENT MAP", 0.98, 2.9, 1.65);
-  text(slide, "NASA imagery · selectable event markers", 1.0, 5.92, 4.9, 0.2, { fontSize: 9, color: C.muted });
+  pill(slide, "2D / 3D VIEWS", 2.78, 2.9, 1.28, C.cyan, "1B3036");
+  text(slide, "NASA imagery · selectable event markers · archive below", 1.0, 5.92, 5.9, 0.2, { fontSize: 9, color: C.muted });
 
   box(slide, 8.22, 2.67, 4.36, 1.26, C.panel, C.edge, true);
   text(slide, "CHOOSE HOW TO LISTEN", 8.48, 2.88, 2.6, 0.18, { fontSize: 8, bold: true, charSpacing: 1, color: C.quiet });
@@ -259,7 +260,7 @@ function addMapMock(slide, x, y, w, h) {
   text(slide, "EVENT LIST", 8.48, 5.58, 1.3, 0.18, { fontSize: 8, bold: true, charSpacing: 1, color: C.quiet });
   dot(slide, 8.5, 5.93, 0.1, C.coral);
   text(slide, "Wildfires · select to play", 8.72, 5.86, 2.7, 0.23, { fontSize: 10, color: C.text });
-  text(slide, "Filters · optional location · stop control", 0.75, 6.57, 7.8, 0.2, { fontSize: 9, color: C.muted });
+  text(slide, "Filters · optional location · weekly/monthly/yearly NASA + GDACS archive", 0.75, 6.57, 9.0, 0.2, { fontSize: 9, color: C.muted });
 }
 
 // 5. Instrumental mappings
@@ -360,8 +361,8 @@ function addMapMock(slide, x, y, w, h) {
   section(slide, "07  /  How it is built", "A lightweight browser app with live sources and local sound", "The shipped prototype uses Vite, vanilla JavaScript, Leaflet, and browser speech/audio capabilities.");
 
   const columns = [
-    { x: 0.73, w: 3.4, color: C.cyan, tag: "PUBLIC DATA", title: "Earth sources", lines: "NASA EONET  /  open natural events\nNASA GIBS  /  map imagery\nNOAA CPC ONI  /  climate context" },
-    { x: 4.97, w: 3.4, color: C.mint, tag: "THE COXMOX APP", title: "Explore + translate", lines: "Vite-served browser interface\nLeaflet map + category filters\n13 instrument mappings + WAV files" },
+    { x: 0.73, w: 3.4, color: C.cyan, tag: "PUBLIC DATA", title: "Earth sources", lines: "NASA EONET  /  natural events\nNASA GIBS  /  imagery\nGDACS  /  global disaster reports" },
+    { x: 4.97, w: 3.4, color: C.mint, tag: "THE COXMOX APP", title: "Explore + translate", lines: "Vite multi-page browser app\nLeaflet 2D + globe.gl 3D views\n13 instrument mappings + WAV files" },
     { x: 9.2, w: 3.4, color: C.citrus, tag: "USER EXPERIENCE", title: "Two outputs", lines: "Local instrumental loops\nSpeechSynthesis event narration\nOptional voice input / location" },
   ];
   columns.forEach((c, i) => {
@@ -387,7 +388,7 @@ function addMapMock(slide, x, y, w, h) {
     ["00:20", "Select", "Choose a wildfire marker or event in the list."],
     ["00:40", "Listen", "Play its marimba track; point out the category mapping."],
     ["01:00", "Switch", "Select Vocal agent; hear the event details spoken."],
-    ["01:25", "Explain", "Show the optional controls and state the safety limits."],
+    ["01:25", "Explore", "Switch to the 3D globe; open a weekly, monthly, or yearly archive."],
   ];
   beats.forEach((b, i) => {
     const y = 2.74 + i * 0.67;
@@ -415,7 +416,7 @@ function addMapMock(slide, x, y, w, h) {
 
   rule(slide, 0.78, 5.72, 12.55, 5.72, C.edge, 0.8);
   text(slide, "REFERENCE STARTING POINTS", 0.8, 5.91, 2.4, 0.18, { fontSize: 8, bold: true, charSpacing: 1.1, color: C.quiet });
-  text(slide, "NASA EONET  ·  eonet.gsfc.nasa.gov/docs/v3     NASA GIBS  ·  gibs.earthdata.nasa.gov     NOAA CPC ONI  ·  cpc.ncep.noaa.gov", 0.8, 6.18, 11.7, 0.24, { fontSize: 9, color: C.muted });
+  text(slide, "NASA EONET  ·  eonet.gsfc.nasa.gov/docs/v3     GDACS  ·  gdacs.org     NASA GIBS  ·  gibs.earthdata.nasa.gov", 0.8, 6.18, 11.7, 0.24, { fontSize: 9, color: C.muted });
   text(slide, "Verify the current official challenge brief, judging criteria, and reuse guidance before submission.", 0.8, 6.55, 11.7, 0.2, { fontSize: 8, color: C.gold });
   text(slide, "See Earth change. Hear Earth change.", 8.35, 6.78, 4.0, 0.16, { fontFace: HEAD, fontSize: 9, bold: true, color: C.mint, align: "right" });
 }
